@@ -10,7 +10,6 @@ package rtprtcp
 
 import (
 	"github.com/q191201771/lal/pkg/base"
-	"github.com/q191201771/naza/pkg/nazalog"
 )
 
 // 传入RTP包，合成帧数据，并回调返回
@@ -71,21 +70,6 @@ type OnAvPacket func(pkt base.AvPacket)
 
 // DefaultRtpUnpackerFactory 目前支持AVC，HEVC和AAC MPEG4-GENERIC，业务方也可以自己实现IRtpUnpackerProtocol，甚至是IRtpUnpackContainer
 func DefaultRtpUnpackerFactory(payloadType base.AvPacketPt, clockRate int, maxSize int, onAvPacket OnAvPacket) IRtpUnpacker {
-	nazalog.Debugf("DefaultRtpUnpackerFactory. type=%d, clockRate=%d, maxSize=%d", payloadType, clockRate, maxSize)
-	var protocol IRtpUnpackerProtocol
-	switch payloadType {
-	case base.AvPacketPtAac:
-		protocol = NewRtpUnpackerAac(payloadType, clockRate, onAvPacket)
-	case base.AvPacketPtG711U:
-		fallthrough
-	case base.AvPacketPtG711A, base.AvPacketPtOpus:
-		protocol = NewRtpUnpackerRaw(payloadType, clockRate, onAvPacket)
-	case base.AvPacketPtAvc:
-		fallthrough
-	case base.AvPacketPtHevc:
-		protocol = NewRtpUnpackerAvcHevc(payloadType, clockRate, onAvPacket)
-	default:
-		Log.Fatalf("payload type not support yet. payloadType=%d", payloadType)
-	}
-	return NewRtpUnpackContainer(maxSize, protocol)
+	_ = "STUB: not implemented"
+	return *new(IRtpUnpacker)
 }

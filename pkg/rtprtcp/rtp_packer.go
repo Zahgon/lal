@@ -36,20 +36,8 @@ var defaultRtpPackerOption = RtpPackerOption{
 type ModRtpPackerOption func(option *RtpPackerOption)
 
 func NewRtpPacker(payloadPacker IRtpPackerPayload, clockRate int, ssrc uint32, modOptions ...ModRtpPackerOption) *RtpPacker {
-	option := defaultRtpPackerOption
-	option.FirstSeq = uint16(rand.Int() % 65536)
-
-	for _, fn := range modOptions {
-		fn(&option)
-	}
-
-	return &RtpPacker{
-		payloadPacker: payloadPacker,
-		clockRate:     clockRate,
-		ssrc:          ssrc,
-		option:        option,
-		seq:           option.FirstSeq,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Pack
@@ -59,27 +47,11 @@ func NewRtpPacker(payloadPacker IRtpPackerPayload, clockRate int, ssrc uint32, m
 // - pkt.Timestamp   绝对时间戳，单位毫秒。
 // - pkt.PayloadType rtp包头中的packet type。
 func (r *RtpPacker) Pack(pkt base.AvPacket) (out []RtpPacket) {
-	payloads := r.payloadPacker.Pack(pkt.Payload, r.option.MaxPayloadSize)
-	for i, payload := range payloads {
-		h := MakeDefaultRtpHeader()
-		if i == len(payloads)-1 {
-			h.Mark = 1
-		}
-		h.PacketType = uint8(pkt.PayloadType)
-		h.Seq = r.genSeq()
-		h.Timestamp = uint32(float64(pkt.Timestamp) * float64(r.clockRate) / 1000)
-		h.Ssrc = r.ssrc
-		pkt := MakeRtpPacket(h, payload)
-		out = append(out, pkt)
-	}
-	return
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (r *RtpPacker) genSeq() (ret uint16) {
-	ret = r.seq
-	r.seq++
-	return
-}
+func (r *RtpPacker) genSeq() (ret uint16) { _ = "STUB: not implemented"; return 0 }
 
 func init() {
 	rand.Seed(time.Now().UnixNano())

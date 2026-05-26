@@ -72,81 +72,35 @@ type GopCache struct {
 //   - 如果为0，则不缓存音频数据，也即GOP缓存功能不生效。
 //   - 如果>0，则缓存[0, gopNum]个GOP，最多缓存 gopNum 个GOP。注意，最后一个GOP可能是不完整的。
 func NewGopCache(t string, uniqueKey string, gopNum int, singleGopMaxFrameNum int) *GopCache {
-	return &GopCache{
-		t:                    t,
-		uniqueKey:            uniqueKey,
-		gopSize:              gopNum + 1,
-		gopRing:              make([]Gop, gopNum+1, gopNum+1),
-		gopRingFirst:         0,
-		gopRingLast:          0,
-		singleGopMaxFrameNum: singleGopMaxFrameNum,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type LazyGet func() []byte
 
 func (gc *GopCache) SetMetadata(w []byte, wo []byte) {
+	_ = "STUB: not implemented"
 	// TODO(chef): [refactor] 将metadata等缓存逻辑从GopCache中移除 202207
-
-	gc.MetadataEnsureWithSetDataFrame = w
-	gc.MetadataEnsureWithoutSetDataFrame = wo
-	Log.Debugf("[%s] cache %s metadata. size:%d", gc.uniqueKey, gc.t, len(gc.MetadataEnsureWithSetDataFrame))
+	return
 }
 
 // Feed
 //
 // @param lg: 内部可能持有lg返回的内存块
 func (gc *GopCache) Feed(msg base.RtmpMsg, b []byte) bool {
+	_ = "STUB: not implemented"
 	// TODO(chef): [refactor] 重构lg两个参数这种方式 202207
-
-	switch msg.Header.MsgTypeId {
-	case base.RtmpTypeIdMetadata:
-		// noop
-		return true
-	case base.RtmpTypeIdAudio:
-		if msg.IsAacSeqHeader() {
-			gc.AacSeqHeader = b
-			Log.Debugf("[%s] cache %s aac seq header. size:%d", gc.uniqueKey, gc.t, len(gc.AacSeqHeader))
-			return true
-		}
-	case base.RtmpTypeIdVideo:
-		if msg.IsVideoKeySeqHeader() {
-			gc.VideoSeqHeader = b
-			Log.Debugf("[%s] cache %s video seq header. size:%d", gc.uniqueKey, gc.t, len(gc.VideoSeqHeader))
-			return true
-		}
-	}
-
-	if gc.gopSize > 1 {
-		if msg.IsVideoKeyNalu() {
-			gc.feedNewGop(msg, b)
-		} else {
-			return gc.feedLastGop(msg, b)
-		}
-	}
-	return true
+	return false
 }
+
+// noop
 
 // GetGopCount 获取GOP数量，注意，最后一个可能是不完整的
-func (gc *GopCache) GetGopCount() int {
-	return (gc.gopRingLast + gc.gopSize - gc.gopRingFirst) % gc.gopSize
-}
+func (gc *GopCache) GetGopCount() int { _ = "STUB: not implemented"; return 0 }
 
-func (gc *GopCache) GetGopDataAt(pos int) [][]byte {
-	if pos >= gc.GetGopCount() || pos < 0 {
-		return nil
-	}
-	return gc.gopRing[(pos+gc.gopRingFirst)%gc.gopSize].data
-}
+func (gc *GopCache) GetGopDataAt(pos int) [][]byte { _ = "STUB: not implemented"; return nil }
 
-func (gc *GopCache) Clear() {
-	gc.MetadataEnsureWithSetDataFrame = nil
-	gc.MetadataEnsureWithoutSetDataFrame = nil
-	gc.VideoSeqHeader = nil
-	gc.AacSeqHeader = nil
-	gc.gopRingLast = 0
-	gc.gopRingFirst = 0
-}
+func (gc *GopCache) Clear() { _ = "STUB: not implemented"; return }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -155,36 +109,18 @@ func (gc *GopCache) Clear() {
 // 往最后一个GOP元素追加一个msg
 // 注意，如果GopCache为空，则不缓存msg
 func (gc *GopCache) feedLastGop(msg base.RtmpMsg, b []byte) bool {
-	if !gc.isGopRingEmpty() {
-		gopPos := (gc.gopRingLast - 1 + gc.gopSize) % gc.gopSize
-		if gc.gopRing[gopPos].len() <= gc.singleGopMaxFrameNum || gc.singleGopMaxFrameNum == 0 {
-			gc.gopRing[gopPos].Feed(msg, b)
-		} else {
-			return false
-		}
-	}
-	return true
+	_ = "STUB: not implemented"
+	return false
 }
 
 // feedNewGop
 //
 // 生成一个最新的GOP元素，并往里追加一个msg
-func (gc *GopCache) feedNewGop(msg base.RtmpMsg, b []byte) {
-	if gc.isGopRingFull() {
-		gc.gopRingFirst = (gc.gopRingFirst + 1) % gc.gopSize
-	}
-	gc.gopRing[gc.gopRingLast].Clear()
-	gc.gopRing[gc.gopRingLast].Feed(msg, b)
-	gc.gopRingLast = (gc.gopRingLast + 1) % gc.gopSize
-}
+func (gc *GopCache) feedNewGop(msg base.RtmpMsg, b []byte) { _ = "STUB: not implemented"; return }
 
-func (gc *GopCache) isGopRingFull() bool {
-	return (gc.gopRingLast+1)%gc.gopSize == gc.gopRingFirst
-}
+func (gc *GopCache) isGopRingFull() bool { _ = "STUB: not implemented"; return false }
 
-func (gc *GopCache) isGopRingEmpty() bool {
-	return gc.gopRingFirst == gc.gopRingLast
-}
+func (gc *GopCache) isGopRingEmpty() bool { _ = "STUB: not implemented"; return false }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -195,13 +131,8 @@ type Gop struct {
 // Feed
 //
 // @param b: 内部持有`b`内存块
-func (g *Gop) Feed(msg base.RtmpMsg, b []byte) {
-	g.data = append(g.data, b)
-}
+func (g *Gop) Feed(msg base.RtmpMsg, b []byte) { _ = "STUB: not implemented"; return }
 
-func (g *Gop) Clear() {
-	g.data = g.data[:0]
-}
-func (g *Gop) len() int {
-	return len(g.data)
-}
+func (g *Gop) Clear() { _ = "STUB: not implemented"; return }
+
+func (g *Gop) len() int { _ = "STUB: not implemented"; return 0 }

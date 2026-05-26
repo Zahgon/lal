@@ -8,12 +8,6 @@
 
 package base
 
-import (
-	"fmt"
-	"path/filepath"
-	"strings"
-)
-
 // 版本信息相关
 // lal的一部分版本信息使用了naza.bininfo
 // 另外，我们也在本文件提供另外一些信息
@@ -156,95 +150,11 @@ func MockVersion(
 	lalVersion, confVersion, httpApiVersion, httpNotifyVersion, httpWebUiVersion,
 	lalLibraryName, lalGithubRepo, lalGithubSite, lalDocSite, lalDocSiteHTTPAPI,
 	lalDefaultConfigFilename, lalLogo string) {
-	LalVersion = lalVersion
-	ConfVersion = confVersion
-	HttpApiVersion = httpApiVersion
-	HttpNotifyVersion = httpNotifyVersion
-	HttpWebUiVersion = httpWebUiVersion
-
-	LalLibraryName = lalLibraryName
-	LalGithubRepo = lalGithubRepo
-	LalGithubSite = lalGithubSite
-	LalDocSite = lalDocSite
-	LalDocSiteHTTPAPI = lalDocSiteHTTPAPI
-
-	LalDefaultConfigFilename = lalDefaultConfigFilename
-	LalLogo = lalLogo
-
-	initial()
+	_ = "STUB: not implemented"
+	return
 }
 
-func initial() {
-	LalFullInfo = LalLibraryName + " " + LalVersion + " (" + LalGithubRepo + ")"
-	LalVersionDot = strings.TrimPrefix(LalVersion, "v")
-	LalVersionComma = strings.Replace(LalVersionDot, ".", ",", -1)
-
-	LalRtmpConnectResultVersion = LalVersionComma
-
-	LalRtmpPushSessionConnectVersion = LalLibraryName + LalVersionDot
-	LalRtmpBuildMetadataEncoder = LalLibraryName + LalVersionDot
-	LalHttpflvSubSessionServer = LalLibraryName + LalVersionDot
-	LalHlsM3u8Server = LalLibraryName + LalVersionDot
-	LalHlsTsServer = LalLibraryName + LalVersionDot
-	LalRtspOptionsResponseServer = LalLibraryName + LalVersionDot
-	LalHttptsSubSessionServer = LalLibraryName + LalVersionDot
-	LalHttpApiServer = LalLibraryName + LalVersionDot
-
-	LalHttpflvPullSessionUa = LalLibraryName + "/" + LalVersionDot
-	LalRtspPullSessionUa = LalLibraryName + "/" + LalVersionDot
-
-	LalRtmpHandshakeWaterMark = LalFullInfo
-
-	LalPackSdp = LalLibraryName + " " + LalVersionDot
-
-	LalRtspRealm = LalLibraryName
-
-	DespPageNotFound = "page not found, check this document out: " + LalDocSiteHTTPAPI
-
-	LalRtmpRandom1528Buf = make([]byte, 1528)
-	hack := []byte(fmt.Sprintf("random buf of rtmp handshake gen by %s", LalRtmpHandshakeWaterMark))
-	for i := 0; i < 1528; i += len(hack) {
-		copy(LalRtmpRandom1528Buf[i:], hack)
-	}
-
-	LalFlvHttpResponseHeader = []byte("HTTP/1.1 200 OK\r\n" +
-		"Server: " + LalHttpflvSubSessionServer + "\r\n" +
-		"Cache-Control: no-cache\r\n" +
-		"Content-Type: video/x-flv\r\n" +
-		"Connection: close\r\n" +
-		"Expires: -1\r\n" +
-		"Pragma: no-cache\r\n" +
-		CorsHeaders +
-		"\r\n")
-
-	LalTsHttpResponseHeader = []byte("HTTP/1.1 200 OK\r\n" +
-		"Server: " + LalHttptsSubSessionServer + "\r\n" +
-		"Cache-Control: no-cache\r\n" +
-		"Content-Type: video/mp2t\r\n" +
-		"Connection: close\r\n" +
-		"Expires: -1\r\n" +
-		"Pragma: no-cache\r\n" +
-		CorsHeaders +
-		"\r\n")
-
-	LalRtspResponseOptionsTmpl = "RTSP/1.0 200 OK\r\n" +
-		"Server: " + LalRtspOptionsResponseServer + "\r\n" +
-		"CSeq: %s\r\n" +
-		"Public: DESCRIBE, ANNOUNCE, SETUP, PLAY, PAUSE, RECORD, TEARDOWN\r\n" +
-		"\r\n"
-
-	LalDefaultConfFilenameList = []string{
-		filepath.FromSlash(LalDefaultConfigFilename),
-		filepath.FromSlash("./conf/" + LalDefaultConfigFilename),
-		filepath.FromSlash("../" + LalDefaultConfigFilename),
-		filepath.FromSlash("../conf/" + LalDefaultConfigFilename),
-		filepath.FromSlash("../../" + LalDefaultConfigFilename),
-		filepath.FromSlash("../../conf/" + LalDefaultConfigFilename),
-		filepath.FromSlash("../../../" + LalDefaultConfigFilename),
-		filepath.FromSlash("../../../conf/" + LalDefaultConfigFilename),
-		filepath.FromSlash("lal/conf/" + LalDefaultConfigFilename),
-	}
-}
+func initial() { _ = "STUB: not implemented"; return }
 
 func init() {
 	initial()

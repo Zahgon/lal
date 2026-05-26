@@ -14,6 +14,4 @@ import "time"
 
 // TODO(chef): [refactor] 整理到naza中 202212
 
-func UnixMilli(t time.Time) int64 {
-	return t.UnixNano() / 1e6
-}
+func UnixMilli(t time.Time) int64 { _ = "STUB: not implemented"; return 0 }

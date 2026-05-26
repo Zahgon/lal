@@ -16,19 +16,8 @@ type Fragment struct {
 	fp filesystemlayer.IFile
 }
 
-func (f *Fragment) OpenFile(filename string) (err error) {
-	f.fp, err = fslCtx.Create(filename)
-	if err != nil {
-		return
-	}
-	return
-}
+func (f *Fragment) OpenFile(filename string) (err error) { _ = "STUB: not implemented"; return nil }
 
-func (f *Fragment) WriteFile(b []byte) (err error) {
-	_, err = f.fp.Write(b)
-	return
-}
+func (f *Fragment) WriteFile(b []byte) (err error) { _ = "STUB: not implemented"; return nil }
 
-func (f *Fragment) CloseFile() error {
-	return f.fp.Close()
-}
+func (f *Fragment) CloseFile() error { _ = "STUB: not implemented"; return nil }

@@ -9,10 +9,7 @@
 package rtmp
 
 import (
-	"crypto/tls"
 	"net"
-
-	"github.com/q191201771/lal/pkg/base"
 )
 
 type IServerObserver interface {
@@ -43,80 +40,36 @@ type Server struct {
 }
 
 func NewServer(addr string, observer IServerObserver) *Server {
-	return &Server{
-		addr:     addr,
-		observer: observer,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (server *Server) Listen() (err error) {
-	if server.ln, err = net.Listen("tcp", server.addr); err != nil {
-		return
-	}
-	Log.Infof("start rtmp server listen. addr=%s", server.addr)
-	return
-}
+func (server *Server) Listen() (err error) { _ = "STUB: not implemented"; return nil }
 
 func (server *Server) ListenWithTLS(certFile, keyFile string) (err error) {
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-	if err != nil {
-		Log.Errorf("start rtmps server listen failed. certFile=%s, keyFile=%s, err=%+v", certFile, keyFile, err)
-		return
-	}
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cert}}
-	if server.ln, err = tls.Listen("tcp", server.addr, tlsConfig); err != nil {
-		Log.Errorf("start rtmps server listen failed. addr=%s, err=%+v", server.addr, err)
-		return
-	}
-	Log.Infof("start rtmps server listen. addr=%s", server.addr)
-	return
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (server *Server) RunLoop() error {
-	for {
-		conn, err := server.ln.Accept()
-		if err != nil {
-			return err
-		}
-		go server.handleTcpConnect(conn)
-	}
-}
+func (server *Server) RunLoop() error { _ = "STUB: not implemented"; return nil }
 
-func (server *Server) Dispose() {
-	if server.ln == nil {
-		return
-	}
-	if err := server.ln.Close(); err != nil {
-		Log.Error(err)
-	}
-}
+func (server *Server) Dispose() { _ = "STUB: not implemented"; return }
 
-func (server *Server) handleTcpConnect(conn net.Conn) {
-	Log.Infof("accept a rtmp connection. remoteAddr=%s", conn.RemoteAddr().String())
-	session := NewServerSession(server, conn)
-	_ = session.RunLoop()
-
-	if session.DisposeByObserverFlag {
-		return
-	}
-	switch session.sessionStat.BaseType() {
-	case base.SessionBaseTypePubStr:
-		server.observer.OnDelRtmpPubSession(session)
-	case base.SessionBaseTypeSubStr:
-		server.observer.OnDelRtmpSubSession(session)
-	}
-}
+func (server *Server) handleTcpConnect(conn net.Conn) { _ = "STUB: not implemented"; return }
 
 // ----- IServerSessionObserver ------------------------------------------------------------------------------------
 
 func (server *Server) OnRtmpConnect(session *ServerSession, opa ObjectPairArray) {
-	server.observer.OnRtmpConnect(session, opa)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (server *Server) OnNewRtmpPubSession(session *ServerSession) error {
-	return server.observer.OnNewRtmpPubSession(session)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (server *Server) OnNewRtmpSubSession(session *ServerSession) error {
-	return server.observer.OnNewRtmpSubSession(session)
+	_ = "STUB: not implemented"
+	return nil
 }

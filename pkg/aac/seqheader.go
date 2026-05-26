@@ -8,13 +8,6 @@
 
 package aac
 
-import (
-	"github.com/q191201771/lal/pkg/base"
-	"github.com/q191201771/naza/pkg/nazaerrors"
-
-	"github.com/q191201771/naza/pkg/nazabits"
-)
-
 // TODO(chef) 这个文件的部分内容可以考虑放到package base中
 
 // SequenceHeaderContext
@@ -39,14 +32,7 @@ type SequenceHeaderContext struct {
 // @param b: rtmp/flv的message/tag的payload的前2个字节。
 //
 //	函数调用结束后，内部不持有该内存块
-func (shCtx *SequenceHeaderContext) Unpack(b []byte) {
-	br := nazabits.NewBitReader(b)
-	shCtx.SoundFormat, _ = br.ReadBits8(4)
-	shCtx.SoundRate, _ = br.ReadBits8(2)
-	shCtx.SoundSize, _ = br.ReadBits8(1)
-	shCtx.SoundType, _ = br.ReadBits8(1)
-	shCtx.AacPacketType, _ = br.ReadBits8(8)
-}
+func (shCtx *SequenceHeaderContext) Unpack(b []byte) { _ = "STUB: not implemented"; return }
 
 // MakeAudioDataSeqHeaderWithAsc
 //
@@ -54,17 +40,11 @@ func (shCtx *SequenceHeaderContext) Unpack(b []byte) {
 //
 // @return out: 内存块为独立新申请；函数调用结束后，内部不持有该内存块
 func MakeAudioDataSeqHeaderWithAsc(asc []byte) (out []byte, err error) {
-	if len(asc) < minAscLength {
-		return nil, nazaerrors.Wrap(base.ErrShortBuffer)
-	}
-
-	// 注意，前两个字节是SequenceHeaderContext，后面跟着asc
-	out = make([]byte, 2+len(asc))
-	out[0] = 0xaf
-	out[1] = 0
-	copy(out[2:], asc)
-	return
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// 注意，前两个字节是SequenceHeaderContext，后面跟着asc
 
 // MakeAudioDataSeqHeaderWithAdtsHeader
 //
@@ -72,9 +52,6 @@ func MakeAudioDataSeqHeaderWithAsc(asc []byte) (out []byte, err error) {
 //
 // @return out: 内存块为独立新申请；函数调用结束后，内部不持有该内存块
 func MakeAudioDataSeqHeaderWithAdtsHeader(adtsHeader []byte) (out []byte, err error) {
-	var asc []byte
-	if asc, err = MakeAscWithAdtsHeader(adtsHeader); err != nil {
-		return nil, err
-	}
-	return MakeAudioDataSeqHeaderWithAsc(asc)
+	_ = "STUB: not implemented"
+	return nil, nil
 }

@@ -8,10 +8,6 @@
 
 package rtprtcp
 
-import (
-	"github.com/q191201771/naza/pkg/bele"
-)
-
 // -------------------------------------------
 // rfc3550 6.4.1 SR: Sender Report RTCP Packet
 // -------------------------------------------
@@ -109,37 +105,14 @@ type Sr struct {
 	OctetCnt   uint32
 }
 
-func ParseRtcpHeader(b []byte) RtcpHeader {
-	var h RtcpHeader
-	h.Version = b[0] >> 6
-	h.Padding = (b[0] >> 5) & 0x1
-	h.CountOrFormat = b[0] & 0x1F
-	h.PacketType = b[1]
-	h.Length = bele.BeUint16(b[2:])
-	return h
-}
+func ParseRtcpHeader(b []byte) RtcpHeader { _ = "STUB: not implemented"; return *new(RtcpHeader) }
 
 // ParseSr rfc3550 6.4.1
 //
 // @param b rtcp包，包含包头
-func ParseSr(b []byte) Sr {
-	var s Sr
-	s.SenderSsrc = bele.BeUint32(b[4:])
-	s.Msw = bele.BeUint32(b[8:])
-	s.Lsw = bele.BeUint32(b[12:])
-	s.Timestamp = bele.BeUint32(b[16:])
-	s.PktCnt = bele.BeUint32(b[20:])
-	s.OctetCnt = bele.BeUint32(b[24:])
-	return s
-}
+func ParseSr(b []byte) Sr { _ = "STUB: not implemented"; return *new(Sr) }
 
 // PackTo @param out 传出参数，注意，调用方保证长度>=4
-func (r *RtcpHeader) PackTo(out []byte) {
-	out[0] = r.Version<<6 | r.Padding<<5 | r.CountOrFormat
-	out[1] = r.PacketType
-	bele.BePutUint16(out[2:], r.Length)
-}
+func (r *RtcpHeader) PackTo(out []byte) { _ = "STUB: not implemented"; return }
 
-func (s *Sr) GetMiddleNtp() uint32 {
-	return uint32(((uint64(s.Msw)<<32 | uint64(s.Lsw)) << 16) >> 32)
-}
+func (s *Sr) GetMiddleNtp() uint32 { _ = "STUB: not implemented"; return 0 }

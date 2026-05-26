@@ -75,12 +75,7 @@ type ApiRespBasic struct {
 	Desp      string `json:"desp"`
 }
 
-func ApiNotFoundRespFn() ApiRespBasic {
-	return ApiRespBasic{
-		ErrorCode: ErrorCodePageNotFound,
-		Desp:      DespPageNotFound,
-	}
-}
+func ApiNotFoundRespFn() ApiRespBasic { _ = "STUB: not implemented"; return *new(ApiRespBasic) }
 
 type ApiStatLalInfoResp struct {
 	ApiRespBasic

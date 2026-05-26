@@ -10,7 +10,6 @@ package remux
 
 import (
 	"github.com/q191201771/lal/pkg/base"
-	"github.com/q191201771/lal/pkg/mpegts"
 )
 
 // rtmp2MpegtsFilter
@@ -48,57 +47,15 @@ type iRtmp2MpegtsFilterObserver interface {
 //
 // @param maxMsgSize: 最大缓存多少个包
 func newRtmp2MpegtsFilter(maxMsgSize int, observer iRtmp2MpegtsFilterObserver) *rtmp2MpegtsFilter {
-	return &rtmp2MpegtsFilter{
-		maxMsgSize:   maxMsgSize,
-		data:         make([]base.RtmpMsg, maxMsgSize)[0:0],
-		observer:     observer,
-		audioCodecId: -1,
-		videoCodecId: -1,
-		done:         false,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Push
 //
 // @param msg: 函数调用结束后，内部不持有该内存块
-func (q *rtmp2MpegtsFilter) Push(msg base.RtmpMsg) {
-	if q.done {
-		q.observer.onPop(msg)
-		return
-	}
-
-	q.data = append(q.data, msg.Clone())
-
-	switch msg.Header.MsgTypeId {
-	case base.RtmpTypeIdAudio:
-		q.audioCodecId = int(msg.Payload[0] >> 4)
-	case base.RtmpTypeIdVideo:
-		q.videoCodecId = int(msg.VideoCodecId())
-	}
-
-	if q.videoCodecId != -1 && q.audioCodecId != -1 {
-		q.drain()
-		return
-	}
-
-	if len(q.data) >= q.maxMsgSize {
-		q.drain()
-		return
-	}
-}
+func (q *rtmp2MpegtsFilter) Push(msg base.RtmpMsg) { _ = "STUB: not implemented"; return }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (q *rtmp2MpegtsFilter) drain() {
-	patpmt := mpegts.PackPat()
-	patpmt = append(patpmt, mpegts.PackPmt(q.videoCodecId, q.audioCodecId)...)
-	q.observer.onPatPmt(patpmt)
-
-	for i := range q.data {
-		q.observer.onPop(q.data[i])
-	}
-
-	q.data = nil
-
-	q.done = true
-}
+func (q *rtmp2MpegtsFilter) drain() { _ = "STUB: not implemented"; return }

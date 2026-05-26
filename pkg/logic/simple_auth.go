@@ -9,15 +9,12 @@
 package logic
 
 import (
-	"net/url"
-	"strings"
-
 	"github.com/q191201771/lal/pkg/base"
-	"github.com/q191201771/naza/pkg/nazamd5"
 )
 
 func SimpleAuthCalcSecret(key string, streamName string) string {
-	return nazamd5.Md5([]byte(key + streamName))
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -31,58 +28,28 @@ type SimpleAuthCtx struct {
 }
 
 func NewSimpleAuthCtx(config SimpleAuthConfig) *SimpleAuthCtx {
-	return &SimpleAuthCtx{
-		config: config,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (s *SimpleAuthCtx) OnPubStart(info base.PubStartInfo) error {
-	if s.config.PubRtmpEnable && info.Protocol == base.SessionProtocolRtmpStr ||
-		s.config.PubRtspEnable && info.Protocol == base.SessionProtocolRtspStr {
-		return s.check(info.StreamName, info.UrlParam)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (s *SimpleAuthCtx) OnSubStart(info base.SubStartInfo) error {
-	if (s.config.SubRtmpEnable && info.Protocol == base.SessionProtocolRtmpStr) ||
-		(s.config.SubHttpflvEnable && info.Protocol == base.SessionProtocolFlvStr) ||
-		(s.config.SubHttptsEnable && info.Protocol == base.SessionProtocolTsStr) ||
-		(s.config.SubRtspEnable && info.Protocol == base.SessionProtocolRtspStr) {
-		return s.check(info.StreamName, info.UrlParam)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (s *SimpleAuthCtx) OnHls(streamName string, urlParam string) error {
-	if s.config.HlsM3u8Enable {
-		return s.check(streamName, urlParam)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (s *SimpleAuthCtx) check(streamName string, urlParam string) error {
-	q, err := url.ParseQuery(urlParam)
-	if err != nil {
-		return err
-	}
-	v := q.Get(secretName)
-	if v == "" {
-		return base.ErrSimpleAuthParamNotFound
-	}
-	v = strings.ToLower(v)
-
-	// 注意，只有DangerousLalSecret配置了值，才验证参数是否和DangerousLalSecret相等
-	if len(s.config.DangerousLalSecret) != 0 && v == s.config.DangerousLalSecret {
-		return nil
-	}
-
-	se := SimpleAuthCalcSecret(s.config.Key, streamName)
-	if v == se {
-		return nil
-	}
-
-	Log.Warnf("[%p] SimpleAuthCtx::check failed, se=%s, key=%s, streamName=%s, v=%s, urlParam=%s",
-		s, se, s.config.Key, streamName, v, urlParam)
-	return base.ErrSimpleAuthFailed
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// 注意，只有DangerousLalSecret配置了值，才验证参数是否和DangerousLalSecret相等

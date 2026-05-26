@@ -10,6 +10,7 @@ package rtmp
 
 import (
 	"crypto/tls"
+
 	"github.com/q191201771/lal/pkg/base"
 )
 
@@ -53,29 +54,16 @@ var defaultPullSessionOption = PullSessionOption{
 type ModPullSessionOption func(option *PullSessionOption)
 
 func NewPullSession(modOptions ...ModPullSessionOption) *PullSession {
-	opt := defaultPullSessionOption
-	for _, fn := range modOptions {
-		fn(&opt)
-	}
-
-	return &PullSession{
-		core: NewClientSession(base.SessionTypeRtmpPull, func(option *ClientSessionOption) {
-			option.DoTimeoutMs = opt.PullTimeoutMs
-			option.ReadAvTimeoutMs = opt.ReadAvTimeoutMs
-			option.ReadBufSize = opt.ReadBufSize
-			option.HandshakeComplexFlag = opt.HandshakeComplexFlag
-			option.PeerWinAckSize = opt.PeerWinAckSize
-			option.ReuseReadMessageBufferFlag = opt.ReuseReadMessageBufferFlag
-		}),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // WithOnPullSucc Pull成功
 //
 // 如果你想保证绝对时序，在 WithOnReadRtmpAvMsg 回调音视频数据前，做一些操作，那么使用这个回调替代 Start 返回成功
 func (s *PullSession) WithOnPullSucc(onPullResult func()) *PullSession {
-	s.core.onDoResult = onPullResult
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // WithOnReadRtmpAvMsg
@@ -92,66 +80,48 @@ func (s *PullSession) WithOnPullSucc(onPullResult func()) *PullSession {
 //	    回调接收后，`PullSession`不再使用该内存块。
 //	    业务方可以自由持有释放该内存块。
 func (s *PullSession) WithOnReadRtmpAvMsg(onReadRtmpAvMsg OnReadRtmpAvMsg) *PullSession {
-	s.core.onReadRtmpAvMsg = onReadRtmpAvMsg
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Start 阻塞直到和对端完成拉流前的所有准备工作（也即收到RTMP Play response），或者发生错误
-func (s *PullSession) Start(rawUrl string) error {
-	return s.core.Start(rawUrl)
-}
+func (s *PullSession) Start(rawUrl string) error { _ = "STUB: not implemented"; return nil }
 
 // Pull deprecated. use Start instead.
-func (s *PullSession) Pull(rawUrl string) error {
-	return s.Start(rawUrl)
-}
+func (s *PullSession) Pull(rawUrl string) error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IClientSessionLifecycle interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Dispose 文档请参考： IClientSessionLifecycle interface
-func (s *PullSession) Dispose() error {
-	return s.core.Dispose()
-}
+func (s *PullSession) Dispose() error { _ = "STUB: not implemented"; return nil }
 
 // WaitChan 文档请参考： IClientSessionLifecycle interface
-func (s *PullSession) WaitChan() <-chan error {
-	return s.core.WaitChan()
-}
+func (s *PullSession) WaitChan() <-chan error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionUrlContext interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Url 文档请参考： interface ISessionUrlContext
-func (s *PullSession) Url() string {
-	return s.core.Url()
-}
+func (s *PullSession) Url() string { _ = "STUB: not implemented"; return "" }
 
 // AppName 文档请参考： interface ISessionUrlContext
-func (s *PullSession) AppName() string {
-	return s.core.AppName()
-}
+func (s *PullSession) AppName() string { _ = "STUB: not implemented"; return "" }
 
 // StreamName 文档请参考： interface ISessionUrlContext
-func (s *PullSession) StreamName() string {
-	return s.core.StreamName()
-}
+func (s *PullSession) StreamName() string { _ = "STUB: not implemented"; return "" }
 
 // RawQuery 文档请参考： interface ISessionUrlContext
-func (s *PullSession) RawQuery() string {
-	return s.core.RawQuery()
-}
+func (s *PullSession) RawQuery() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IObject interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // UniqueKey 文档请参考： interface IObject
-func (s *PullSession) UniqueKey() string {
-	return s.core.UniqueKey()
-}
+func (s *PullSession) UniqueKey() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionStat interface
@@ -159,15 +129,17 @@ func (s *PullSession) UniqueKey() string {
 
 // GetStat 文档请参考： interface ISessionStat
 func (s *PullSession) GetStat() base.StatSession {
-	return s.core.GetStat()
+	_ = "STUB: not implemented"
+	return *
+
+	// UpdateStat 文档请参考： interface ISessionStat
+	new(base.StatSession)
 }
 
-// UpdateStat 文档请参考： interface ISessionStat
-func (s *PullSession) UpdateStat(intervalSec uint32) {
-	s.core.UpdateStat(intervalSec)
-}
+func (s *PullSession) UpdateStat(intervalSec uint32) { _ = "STUB: not implemented"; return }
 
 // IsAlive 文档请参考： interface ISessionStat
 func (s *PullSession) IsAlive() (readAlive, writeAlive bool) {
-	return s.core.IsAlive()
+	_ = "STUB: not implemented"
+	return false, false
 }

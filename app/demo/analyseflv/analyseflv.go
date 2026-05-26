@@ -9,24 +9,11 @@
 package main
 
 import (
-	"bytes"
-	"encoding/hex"
-	"flag"
-	"fmt"
-	"github.com/q191201771/lal/pkg/aac"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/q191201771/naza/pkg/nazabytes"
-
 	"github.com/q191201771/lal/pkg/base"
 
-	"github.com/q191201771/lal/pkg/rtmp"
-
-	"github.com/q191201771/lal/pkg/avc"
-	"github.com/q191201771/lal/pkg/hevc"
-	"github.com/q191201771/naza/pkg/bele"
 	"github.com/q191201771/naza/pkg/bitrate"
 
 	"github.com/q191201771/lal/pkg/httpflv"
@@ -90,71 +77,9 @@ var brVideo = bitrate.New(func(option *bitrate.Option) {
 
 var videoCtsNotZeroCount = 0
 
-func handleTags(tag httpflv.Tag) bool {
-	if printEveryTagFlag {
-		nazalog.Debugf("header=%+v, hex=%s", tag.Header, hex.Dump(nazabytes.Prefix(tag.Payload(), 32)))
-	}
+func handleTags(tag httpflv.Tag) bool { _ = "STUB: not implemented"; return false }
 
-	brTotal.Add(len(tag.Raw))
-
-	switch tag.Header.Type {
-	case httpflv.TagTypeMetadata:
-		if printMetaData {
-			nazalog.Debugf("----------\n%s", hex.Dump(tag.Payload()))
-
-			opa, err := rtmp.ParseMetadata(tag.Payload())
-			nazalog.Assert(nil, err)
-			var buf bytes.Buffer
-			buf.WriteString(fmt.Sprintf("-----\ncount:%d\n", len(opa)))
-			for _, op := range opa {
-				buf.WriteString(fmt.Sprintf("  %s: %+v\n", op.Key, op.Value))
-			}
-			nazalog.Debugf("%+v", buf.String())
-		}
-	case httpflv.TagTypeAudio:
-		//nazalog.Debugf("header=%+v, body=%s", tag.Header, hex.Dump(nazabytes.Prefix(tag.Payload(), 128)))
-		brAudio.Add(len(tag.Raw))
-
-		if tag.IsAacSeqHeader() {
-			ascCtx, err := aac.NewAscContext(tag.Payload()[2:])
-			nazalog.Assert(nil, err)
-			nazalog.Infof("aac seq header. %s, %+v", hex.EncodeToString(tag.Payload()), ascCtx)
-		}
-		if timestampCheckFlag {
-			if prevAudioTs != -1 && int64(tag.Header.Timestamp) < prevAudioTs {
-				nazalog.Errorf("audio timestamp error, less than prev audio timestamp. header=%+v, prevAudioTs=%d, diff=%d", tag.Header, prevAudioTs, int64(tag.Header.Timestamp)-prevAudioTs)
-			}
-			if prevTs != -1 && int64(tag.Header.Timestamp) < prevTs {
-				nazalog.Warnf("audio timestamp error. less than prev global timestamp. header=%+v, prevTs=%d, diff=%d", tag.Header, prevTs, int64(tag.Header.Timestamp)-prevTs)
-			}
-		}
-		prevAudioTs = int64(tag.Header.Timestamp)
-		prevTs = int64(tag.Header.Timestamp)
-	case httpflv.TagTypeVideo:
-		nazalog.Debugf("header=%+v, body=%s", tag.Header, hex.Dump(nazabytes.Prefix(tag.Payload(), 128)))
-		analysisVideoTag(tag)
-
-		videoCts := bele.BeUint24(tag.Raw[13:])
-		if videoCts != 0 {
-			videoCtsNotZeroCount++
-		}
-
-		brVideo.Add(len(tag.Raw))
-
-		if timestampCheckFlag {
-			if prevVideoTs != -1 && int64(tag.Header.Timestamp) < prevVideoTs {
-				nazalog.Errorf("video timestamp error, less than prev video timestamp. header=%+v, prevVideoTs=%d, diff=%d", tag.Header, prevVideoTs, int64(tag.Header.Timestamp)-prevVideoTs)
-			}
-			if prevTs != -1 && int64(tag.Header.Timestamp) < prevTs {
-				nazalog.Warnf("video timestamp error, less than prev global timestamp. header=%+v, prevTs=%d, diff=%d", tag.Header, prevTs, int64(tag.Header.Timestamp)-prevTs)
-			}
-		}
-		prevVideoTs = int64(tag.Header.Timestamp)
-		prevTs = int64(tag.Header.Timestamp)
-	}
-
-	return true
-}
+//nazalog.Debugf("header=%+v, body=%s", tag.Header, hex.Dump(nazabytes.Prefix(tag.Payload(), 128)))
 
 func main() {
 	_ = nazalog.Init(func(option *nazalog.Option) {
@@ -206,90 +131,13 @@ const (
 
 var t uint8 = typeUnknown
 
-func analysisVideoTag(tag httpflv.Tag) {
-	var buf bytes.Buffer
-	if tag.IsVideoKeySeqHeader() {
-		if tag.IsAvcKeySeqHeader() {
-			t = typeAvc
-			buf.WriteString(" [AVC SeqHeader] ")
-			sps, pps, err := avc.ParseSpsPpsFromSeqHeader(tag.Payload())
-			if err != nil {
-				buf.WriteString(" parse sps pps failed.")
-			}
-			nazalog.Debugf("sps:%s, pps:%s", hex.Dump(sps), hex.Dump(pps))
-		} else if tag.IsHevcKeySeqHeader() {
-			t = typeHevc
-			buf.WriteString(" [HEVC SeqHeader] ")
-			buf.WriteString(hex.Dump(tag.Payload()))
-			if _, _, _, err := hevc.ParseVpsSpsPpsFromSeqHeader(tag.Payload()); err != nil {
-				buf.WriteString(" parse vps sps pps failed.")
-			}
-		}
-	} else {
-		cts := bele.BeUint24(tag.Payload()[2:])
-		buf.WriteString(fmt.Sprintf("%+v, cts=%d, pts=%d", tag.Header, cts, tag.Header.Timestamp+cts))
-
-		body := tag.Payload()[5:]
-		nals, err := avc.SplitNaluAvcc(body)
-		nazalog.Assert(nil, err)
-
-		for _, nal := range nals {
-			switch t {
-			case typeAvc:
-				if avc.ParseNaluType(nal[0]) == avc.NaluTypeIdrSlice {
-					nazalog.Debugf("IDR:%s", hex.Dump(nazabytes.Prefix(nal, 128)))
-					if prevIdrTs != int64(-1) {
-						diffIdrTs = int64(tag.Header.Timestamp) - prevIdrTs
-					}
-					prevIdrTs = int64(tag.Header.Timestamp)
-				}
-				if avc.ParseNaluType(nal[0]) == avc.NaluTypeSei {
-					delay := SeiDelayMs(nal)
-					if delay != -1 {
-						buf.WriteString(fmt.Sprintf("delay: %dms", delay))
-					}
-				}
-				sliceTypeReadable, _ := avc.ParseSliceTypeReadable(nal)
-				buf.WriteString(fmt.Sprintf(" [%s(%s)(%d)] ", avc.ParseNaluTypeReadable(nal[0]), sliceTypeReadable, len(nal)))
-			case typeHevc:
-				if hevc.ParseNaluType(nal[0]) == hevc.NaluTypeSei {
-					delay := SeiDelayMs(nal)
-					if delay != -1 {
-						buf.WriteString(fmt.Sprintf("delay: %dms", delay))
-					}
-				}
-				buf.WriteString(fmt.Sprintf(" [%s(%d)] ", hevc.ParseNaluTypeReadable(nal[0]), nal[0]))
-			}
-		}
-	}
-	if analysisVideoTagFlag {
-		nazalog.Debug(buf.String())
-	}
-}
+func analysisVideoTag(tag httpflv.Tag) { _ = "STUB: not implemented"; return }
 
 // SeiDelayMs 注意，SEI的内容是自定义格式，解析的代码不具有通用性
 func SeiDelayMs(seiNalu []byte) int {
-	//nazalog.Debugf("sei: %s", hex.Dump(seiNalu))
-	items := strings.Split(string(seiNalu), ":")
-	if len(items) != 3 {
-		return -1
-	}
-
-	a, err := strconv.ParseInt(items[1], 10, 64)
-	if err != nil {
-		return -1
-	}
-	t := time.Unix(a/1e3, a%1e3)
-	d := time.Now().Sub(t)
-	return int(d.Nanoseconds() / 1e6)
+	_ = "STUB: not implemented"
+	// nazalog.Debugf("sei: %s", hex.Dump(seiNalu))
+	return 0
 }
 
-func parseFlag() string {
-	in := flag.String("i", "", "specify http-flv url, or flv filename")
-	flag.Parse()
-	if *in == "" {
-		flag.Usage()
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *in
-}
+func parseFlag() string { _ = "STUB: not implemented"; return "" }

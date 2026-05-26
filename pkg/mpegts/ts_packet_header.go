@@ -8,10 +8,6 @@
 
 package mpegts
 
-import (
-	"github.com/q191201771/naza/pkg/nazabits"
-)
-
 // TsPacketHeader ------------------------------------------------
 // <iso13818-1.pdf> <2.4.3.2> <page 36/174>
 // sync_byte                    [8b]  * always 0x47
@@ -56,22 +52,13 @@ type TsPacketAdaptation struct {
 
 // ParseTsPacketHeader 解析4字节TS Packet header
 func ParseTsPacketHeader(b []byte) (h TsPacketHeader) {
+	_ = "STUB: not implemented"
 	// TODO chef: 检查长度
-	br := nazabits.NewBitReader(b)
-	h.Sync, _ = br.ReadBits8(8)
-	h.Err, _ = br.ReadBits8(1)
-	h.PayloadUnitStart, _ = br.ReadBits8(1)
-	h.Prio, _ = br.ReadBits8(1)
-	h.Pid, _ = br.ReadBits16(13)
-	h.Scra, _ = br.ReadBits8(2)
-	h.Adaptation, _ = br.ReadBits8(2)
-	h.Cc, _ = br.ReadBits8(4)
-	return
+	return *new(TsPacketHeader)
 }
 
 // ParseTsPacketAdaptation TODO chef
 func ParseTsPacketAdaptation(b []byte) (f TsPacketAdaptation) {
-	br := nazabits.NewBitReader(b)
-	f.Length, _ = br.ReadBits8(8)
-	return
+	_ = "STUB: not implemented"
+	return *new(TsPacketAdaptation)
 }

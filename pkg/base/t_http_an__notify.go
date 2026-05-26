@@ -93,57 +93,38 @@ type HlsMakeTsInfo struct {
 // ---------------------------------------------------------------------------------------------------------------------
 
 func Session2PubStartInfo(session ISession) PubStartInfo {
-	return PubStartInfo{
-		session2EventCommonInfo(session),
-	}
+	_ = "STUB: not implemented"
+	return *new(PubStartInfo)
 }
 
 func Session2PubStopInfo(session ISession) PubStopInfo {
-	return PubStopInfo{
-		session2EventCommonInfo(session),
-	}
+	_ = "STUB: not implemented"
+	return *new(PubStopInfo)
 }
 
 func Session2SubStartInfo(session ISession) SubStartInfo {
-	return SubStartInfo{
-		session2EventCommonInfo(session),
-	}
+	_ = "STUB: not implemented"
+	return *new(SubStartInfo)
 }
 
 func Session2SubStopInfo(session ISession) SubStopInfo {
-	return SubStopInfo{
-		session2EventCommonInfo(session),
-	}
+	_ = "STUB: not implemented"
+	return *new(SubStopInfo)
 }
 
 func Session2PullStartInfo(session ISession) PullStartInfo {
-	return PullStartInfo{
-		session2EventCommonInfo(session),
-	}
+	_ = "STUB: not implemented"
+	return *new(PullStartInfo)
 }
 
 func Session2PullStopInfo(session ISession) PullStopInfo {
-	return PullStopInfo{
-		session2EventCommonInfo(session),
-	}
+	_ = "STUB: not implemented"
+	return *new(PullStopInfo)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 func session2EventCommonInfo(session ISession) SessionEventCommonInfo {
-	var info SessionEventCommonInfo
-	stat := session.GetStat()
-	info.SessionId = stat.SessionId
-	info.Protocol = stat.Protocol
-	info.BaseType = stat.BaseType
-	info.RemoteAddr = stat.RemoteAddr
-
-	info.Url = session.Url()
-	info.AppName = session.AppName()
-	info.StreamName = session.StreamName()
-
-	info.UrlParam = session.RawQuery()
-	info.ReadBytesSum = stat.ReadBytesSum
-	info.WroteBytesSum = stat.WroteBytesSum
-	return info
+	_ = "STUB: not implemented"
+	return *new(SessionEventCommonInfo)
 }

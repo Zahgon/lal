@@ -13,17 +13,9 @@ import "crypto/tls"
 // TODO(chef): 移入naza中 2302
 // TODO(chef): 将lal中使用tls.Config的地方都聚合到这里来 2302
 
-func DefaultTlsConfigClient() *tls.Config {
-	return &tls.Config{
-		InsecureSkipVerify: true,
-	}
-}
+func DefaultTlsConfigClient() *tls.Config { _ = "STUB: not implemented"; return nil }
 
 func DefaultTlsConfigServer(certFile, keyFile string) (*tls.Config, error) {
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-	if err != nil {
-		return nil, err
-	}
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cert}}
-	return tlsConfig, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

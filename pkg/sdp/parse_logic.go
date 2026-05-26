@@ -9,9 +9,6 @@
 package sdp
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/q191201771/lal/pkg/base"
 )
 
@@ -40,163 +37,59 @@ type LogicContext struct {
 }
 
 func (lc *LogicContext) IsAudioPayloadTypeOrigin(t int) bool {
-	return lc.audioPayloadTypeOrigin == t
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (lc *LogicContext) IsVideoPayloadTypeOrigin(t int) bool {
-	return lc.videoPayloadTypeOrigin == t
+	_ = "STUB: not implemented"
+	return false
 }
 
-func (lc *LogicContext) IsPayloadTypeOrigin(t int) bool {
-	return lc.audioPayloadTypeOrigin == t || lc.videoPayloadTypeOrigin == t
-}
+func (lc *LogicContext) IsPayloadTypeOrigin(t int) bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) IsAudioUnpackable() bool {
-	return (lc.audioPayloadTypeBase == base.AvPacketPtAac && lc.Asc != nil) || (lc.audioPayloadTypeBase == base.AvPacketPtG711A) || (lc.audioPayloadTypeBase == base.AvPacketPtG711U) || (lc.audioPayloadTypeBase == base.AvPacketPtOpus)
-}
+func (lc *LogicContext) IsAudioUnpackable() bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) IsVideoUnpackable() bool {
-	return lc.videoPayloadTypeBase == base.AvPacketPtAvc ||
-		lc.videoPayloadTypeBase == base.AvPacketPtHevc
-}
+func (lc *LogicContext) IsVideoUnpackable() bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) IsAudioUri(uri string) bool {
-	return lc.audioAControl != "" && strings.HasSuffix(uri, lc.audioAControl)
-}
+func (lc *LogicContext) IsAudioUri(uri string) bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) IsVideoUri(uri string) bool {
-	return lc.videoAControl != "" && strings.HasSuffix(uri, lc.videoAControl)
-}
+func (lc *LogicContext) IsVideoUri(uri string) bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) HasAudioAControl() bool {
-	return lc.audioAControl != ""
-}
+func (lc *LogicContext) HasAudioAControl() bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) HasVideoAControl() bool {
-	return lc.videoAControl != ""
-}
+func (lc *LogicContext) HasVideoAControl() bool { _ = "STUB: not implemented"; return false }
 
-func (lc *LogicContext) MakeAudioSetupUri(uri string) string {
-	return lc.makeSetupUri(uri, lc.audioAControl)
-}
+func (lc *LogicContext) MakeAudioSetupUri(uri string) string { _ = "STUB: not implemented"; return "" }
 
-func (lc *LogicContext) MakeVideoSetupUri(uri string) string {
-	return lc.makeSetupUri(uri, lc.videoAControl)
-}
+func (lc *LogicContext) MakeVideoSetupUri(uri string) string { _ = "STUB: not implemented"; return "" }
 
 func (lc *LogicContext) GetAudioPayloadTypeBase() base.AvPacketPt {
-	return lc.audioPayloadTypeBase
+	_ = "STUB: not implemented"
+	return *new(base.AvPacketPt)
 }
 
 func (lc *LogicContext) GetVideoPayloadTypeBase() base.AvPacketPt {
-	return lc.videoPayloadTypeBase
+	_ = "STUB: not implemented"
+	return *new(base.AvPacketPt)
 }
 
 func (lc *LogicContext) makeSetupUri(uri string, aControl string) string {
-	if strings.HasPrefix(aControl, "rtsp://") {
-		return aControl
-	}
-	return fmt.Sprintf("%s/%s", uri, aControl)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func ParseSdp2LogicContext(b []byte) (LogicContext, error) {
-	var ret LogicContext
-
-	c, err := ParseSdp2RawContext(b)
-	if err != nil {
-		return ret, err
-	}
-
-	for _, md := range c.MediaDescList {
-		switch md.M.Media {
-		case "audio":
-			ret.hasAudio = true
-			ret.AudioClockRate = md.ARtpMap.ClockRate
-			ret.audioAControl = md.AControl.Value
-
-			ret.audioPayloadTypeOrigin = md.ARtpMap.PayloadType
-			if strings.EqualFold(md.ARtpMap.EncodingName, ARtpMapEncodingNameAac) {
-				ret.audioPayloadTypeBase = base.AvPacketPtAac
-				if md.AFmtPBase != nil {
-					ret.Asc, err = ParseAsc(md.AFmtPBase)
-					if err != nil {
-						Log.Warnf("parse asc from afmtp failed. err=%+v", err)
-					}
-				} else {
-					Log.Warnf("aac afmtp not exist.")
-				}
-			} else if strings.EqualFold(md.ARtpMap.EncodingName, ARtpMapEncodingNameG711A) {
-				// 例子:a=rtpmap:8 PCMA/8000/1
-				// rtmpmap中有PCMA字段表示G711A
-				ret.audioPayloadTypeBase = base.AvPacketPtG711A
-			} else if strings.EqualFold(md.ARtpMap.EncodingName, ARtpMapEncodingNameG711U) {
-				ret.audioPayloadTypeBase = base.AvPacketPtG711U
-			} else if strings.EqualFold(md.ARtpMap.EncodingName, ArtpMapEncodingNameOpus) {
-				ret.audioPayloadTypeBase = base.AvPacketPtOpus
-			} else {
-				// ffmpeg推流情况下不会填充rtpmap字段,m中pt值为8也可以表示是PCMA,采样率默认为8000Hz
-				// RFC3551中表明G711A固定pt值为8
-				if md.M.PT == MediaDescPayloadTypeG711U {
-					ret.audioPayloadTypeBase = base.AvPacketPtG711U
-					ret.audioPayloadTypeOrigin = MediaDescPayloadTypeG711U
-					if ret.AudioClockRate == 0 {
-						ret.AudioClockRate = 8000
-					}
-				} else if md.M.PT == MediaDescPayloadTypeG711A {
-					ret.audioPayloadTypeBase = base.AvPacketPtG711A
-					ret.audioPayloadTypeOrigin = MediaDescPayloadTypeG711A
-					if ret.AudioClockRate == 0 {
-						ret.AudioClockRate = 8000
-					}
-				} else if md.M.PT == MediaDescPayloadTypeMp2 {
-					ret.audioPayloadTypeBase = base.AvPacketPtMp2
-					ret.audioPayloadTypeOrigin = MediaDescPayloadTypeMp2
-					if ret.AudioClockRate == 0 {
-						ret.AudioClockRate = 8000
-					}
-				} else {
-					if md.M.PT != 0 {
-						Log.Warnf("unknown audio payload type. pt=%d", md.M.PT)
-					}
-					ret.audioPayloadTypeBase = base.AvPacketPtUnknown
-				}
-			}
-		case "video":
-			ret.hasVideo = true
-			ret.VideoClockRate = md.ARtpMap.ClockRate
-			ret.videoAControl = md.AControl.Value
-
-			ret.videoPayloadTypeOrigin = md.ARtpMap.PayloadType
-			switch md.ARtpMap.EncodingName {
-			case ARtpMapEncodingNameH264:
-				ret.videoPayloadTypeBase = base.AvPacketPtAvc
-				if md.AFmtPBase != nil {
-					ret.Sps, ret.Pps, err = ParseSpsPps(md.AFmtPBase)
-					if err != nil {
-						Log.Warnf("parse sps pps from afmtp failed. err=%+v", err)
-					}
-				} else {
-					// afmtp不存在，也即没法从sdp中解析出sps、pps。
-					// 这种情况是存在的，sps、pps可以在后续的rtp数据包中传输。
-					// 所以这里只打印警告。
-					Log.Warnf("avc afmtp not exist.")
-				}
-			case ARtpMapEncodingNameH265:
-				ret.videoPayloadTypeBase = base.AvPacketPtHevc
-				if md.AFmtPBase != nil {
-					ret.Vps, ret.Sps, ret.Pps, err = ParseVpsSpsPps(md.AFmtPBase)
-					if err != nil {
-						Log.Warnf("parse vps sps pps from afmtp failed. err=%+v", err)
-					}
-				} else {
-					Log.Warnf("hevc afmtp not exist.")
-				}
-			default:
-				ret.videoPayloadTypeBase = base.AvPacketPtUnknown
-			}
-		}
-	}
-
-	ret.RawSdp = b
-	return ret, nil
+	_ = "STUB: not implemented"
+	return *new(LogicContext), nil
 }
+
+// 例子:a=rtpmap:8 PCMA/8000/1
+// rtmpmap中有PCMA字段表示G711A
+
+// ffmpeg推流情况下不会填充rtpmap字段,m中pt值为8也可以表示是PCMA,采样率默认为8000Hz
+// RFC3551中表明G711A固定pt值为8
+
+// afmtp不存在，也即没法从sdp中解析出sps、pps。
+// 这种情况是存在的，sps、pps可以在后续的rtp数据包中传输。
+// 所以这里只打印警告。

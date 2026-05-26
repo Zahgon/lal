@@ -57,6 +57,4 @@ var crc32table = &crc32.Table{
 	0x6D66B4BC, 0xDA7B75B8, 0x035D36B5, 0xB440F7B1,
 }
 
-func CalcCrc32(crc uint32, buf []byte) uint32 {
-	return ^crc32.Update(^crc, crc32table, buf)
-}
+func CalcCrc32(crc uint32, buf []byte) uint32 { _ = "STUB: not implemented"; return 0 }

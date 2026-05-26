@@ -9,9 +9,6 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/q191201771/lal/pkg/rtmp"
@@ -77,17 +74,6 @@ func main() {
 }
 
 func parseFlag() (inUrl string, outUrl string, overTcp int) {
-	i := flag.String("i", "", "specify pull rtsp url")
-	o := flag.String("o", "", "specify push rtmp url")
-	t := flag.Int("t", 0, "specify interleaved mode(rtp/rtcp over tcp)")
-	flag.Parse()
-	if *i == "" || *o == "" {
-		flag.Usage()
-		_, _ = fmt.Fprintf(os.Stderr, `Example:
-  %s -i rtsp://localhost:5544/live/test110 -o rtmp://localhost:1935/live/test220 -t 0
-  %s -i rtsp://localhost:5544/live/test110 -o rtmp://localhost:1935/live/test220 -t 1
-`, os.Args[0], os.Args[0])
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *i, *o, *t
+	_ = "STUB: not implemented"
+	return "", "", 0
 }

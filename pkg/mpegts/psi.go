@@ -9,7 +9,6 @@
 package mpegts
 
 import (
-	"github.com/q191201771/naza/pkg/bele"
 	"github.com/q191201771/naza/pkg/nazabits"
 )
 
@@ -98,211 +97,89 @@ type PmtSpecificData struct {
 	pes               []PmtProgramElement
 }
 
-func NewPsi() *PsiSection {
-	return &PsiSection{
-		pointerFileld: 0x00,
-	}
-}
+func NewPsi() *PsiSection { _ = "STUB: not implemented"; return nil }
 
-func (psi *PsiSection) Pack() (int, []byte) {
-	psiSection := make([]byte, 1+3+psi.calcPsiSectionLength())
-	bw := nazabits.NewBitWriter(psiSection)
-
-	bw.WriteBits8(8, psi.pointerFileld)
-	psi.writePsiTableHeader(&bw)
-	psi.writePsiTableSyntaxSection(&bw)
-
-	crc := CalcCrc32(0xffffffff, psiSection[1:len(psiSection)-4])
-	bele.LePutUint32(psiSection[4+psi.calcPsiSectionLength()-4:], crc)
-
-	return int(1 + 3 + psi.calcPsiSectionLength()), psiSection
-}
+func (psi *PsiSection) Pack() (int, []byte) { _ = "STUB: not implemented"; return 0, nil }
 
 func (psi *PsiSection) writePsiTableHeader(bw *nazabits.BitWriter) {
-	bw.WriteBits8(8, psi.sectionData.header.tableId)
-	bw.WriteBit(psi.sectionData.header.sectionSyntaxIndicator)
-	bw.WriteBit(0)
-	bw.WriteBits8(2, 0xff)
-
-	psi.sectionData.header.sectionLength = psi.calcPsiSectionLength()
-	bw.WriteBits16(12, psi.sectionData.header.sectionLength)
-
+	_ = "STUB: not implemented"
 	return
 }
 
 func (psi *PsiSection) writePsiTableSyntaxSection(bw *nazabits.BitWriter) {
-	psi.writePsiTableSyntaxSectionHeader(bw)
-	psi.writePsiTableSyntaxSectionData(bw)
-
+	_ = "STUB: not implemented"
 	return
 }
 
 func (psi *PsiSection) writePsiTableSyntaxSectionHeader(bw *nazabits.BitWriter) {
-	bw.WriteBits16(16, psi.sectionData.section.tableIdExtension)
-	bw.WriteBits8(2, 0xff)
-	bw.WriteBits8(5, psi.sectionData.section.versionNumber)
-	bw.WriteBit(psi.sectionData.section.currentNextIndicator)
-	bw.WriteBits8(8, psi.sectionData.section.sectionNumber)
-	bw.WriteBits8(8, psi.sectionData.section.lastSectionNumber)
+	_ = "STUB: not implemented"
 	return
 }
 
 func (psi *PsiSection) writePsiTableSyntaxSectionData(bw *nazabits.BitWriter) {
-	switch psi.sectionData.header.tableId {
-	case TsPsiIdPas:
-		psi.writePatSection(bw)
-	case TsPsiIdPms:
-		psi.writePmtSection(bw)
-	}
-
+	_ = "STUB: not implemented"
 	return
 }
 
-func (psi *PsiSection) calcPsiSectionLength() (length uint16) {
-	if psi.sectionData.header.tableId == TsPsiIdPas || psi.sectionData.header.tableId == TsPsiIdPms {
-		// Table ID extension(16 bits)+Reserved bits(2 bits)+Version number(5 bits)+Current next Indicator(1 bit)+Section number(8 bits)+Last section number(8 bits)
-		length += 5
-	}
+func (psi *PsiSection) calcPsiSectionLength() (length uint16) { _ = "STUB: not implemented"; return 0 }
 
-	switch psi.sectionData.header.tableId {
-	case TsPsiIdPas:
-		length += psi.calaPatSectionLength()
-	case TsPsiIdPms:
-		length += psi.calaPmtSectionLength()
-	}
+// Table ID extension(16 bits)+Reserved bits(2 bits)+Version number(5 bits)+Current next Indicator(1 bit)+Section number(8 bits)+Last section number(8 bits)
 
-	length += 4 //crc32
+//crc32
 
-	return
-}
-
-func (psi *PsiSection) calaPatSectionLength() (length uint16) {
-	length = uint16(4 * len(psi.sectionData.patData.pes))
-	return
-}
+func (psi *PsiSection) calaPatSectionLength() (length uint16) { _ = "STUB: not implemented"; return 0 }
 
 func (psi *PsiSection) calaPmtSectionLength() (length uint16) {
+	_ = "STUB: not implemented"
 	// Reserved bits(3 bits)+PCR PID(13 bits)+Reserved bits(4 bits)+Program info length(12 bits)
-	length = 4
-
-	for _, pe := range psi.sectionData.pmtData.pes {
-		length += 5
-
-		if len(pe.Descriptors) > 0 {
-			length += psi.calcDescriptorsLength(pe.Descriptors)
-		}
-	}
-
-	return
+	return 0
 }
 
 func (psi *PsiSection) calcDescriptorsLength(ds []Descriptor) uint16 {
-	length := uint16(0)
-	for _, d := range ds {
-		length += 2 // tag and length
-		length += uint16(psi.calcDescriptorLength(d))
-	}
-	return length
+	_ = "STUB: not implemented"
+	return 0
 }
 
+// tag and length
+
 func (psi *PsiSection) calcDescriptorLength(d Descriptor) uint8 {
-	if d.Length == 0 {
-		return 0
-	}
-
-	switch d.Tag {
-	case DescriptorTagRegistration:
-		return psi.calcDescriptorRegistrationLength(d.Registration)
-	case DescriptorTagExtension:
-		return psi.calcDescriptorExtensionLength(d.Extension)
-	}
-
+	_ = "STUB: not implemented"
 	return 0
 }
 
 func (psi *PsiSection) calcDescriptorRegistrationLength(d DescriptorRegistration) uint8 {
-	return uint8(4 + len(d.AdditionalIdentificationInfo))
+	_ = "STUB: not implemented"
+	return 0
 }
 
 func (psi *PsiSection) calcDescriptorExtensionLength(d DescriptorExtension) uint8 {
+	_ = "STUB: not implemented"
 	// tag
-	ret := 1
-	if d.Unknown != nil {
-		ret += len(d.Unknown)
-	}
-
-	return uint8(ret)
+	return 0
 }
 
-func (psi *PsiSection) writePatSection(bw *nazabits.BitWriter) {
-	for _, pe := range psi.sectionData.patData.pes {
-		bw.WriteBits16(16, pe.pn)
-		bw.WriteBits8(3, 0xff)
-		bw.WriteBits16(13, pe.pmpid)
-	}
+func (psi *PsiSection) writePatSection(bw *nazabits.BitWriter) { _ = "STUB: not implemented"; return }
 
-	return
-}
-
-func (psi *PsiSection) writePmtSection(bw *nazabits.BitWriter) {
-	bw.WriteBits8(3, 0xff)
-	bw.WriteBits16(13, psi.sectionData.pmtData.pcrPid)
-	bw.WriteBits8(4, 0xff)
-	bw.WriteBits16(12, psi.sectionData.pmtData.programInfoLength)
-
-	for _, pe := range psi.sectionData.pmtData.pes {
-		bw.WriteBits8(8, pe.StreamType)
-		bw.WriteBits8(3, 0xff)
-		bw.WriteBits16(13, pe.Pid)
-		psi.writeDescriptorsWithLength(bw, pe.Descriptors)
-	}
-	return
-}
+func (psi *PsiSection) writePmtSection(bw *nazabits.BitWriter) { _ = "STUB: not implemented"; return }
 
 func (psi *PsiSection) writeDescriptorsWithLength(bw *nazabits.BitWriter, dps []Descriptor) {
-	bw.WriteBits8(4, 0xff)
-
-	infolen := psi.calcDescriptorsLength(dps)
-	bw.WriteBits16(12, infolen)
-
-	for _, dp := range dps {
-		psi.writeDescriptor(bw, dp)
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func (psi *PsiSection) writeDescriptor(bw *nazabits.BitWriter, d Descriptor) {
-	length := psi.calcDescriptorLength(d)
-
-	bw.WriteBits8(8, d.Tag)
-	bw.WriteBits8(8, length)
-
-	switch d.Tag {
-	case DescriptorTagRegistration:
-		psi.writeDescriptorRegistration(bw, d.Registration)
-	case DescriptorTagExtension:
-		psi.writeDescriptorExtension(bw, d.Extension)
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func (psi *PsiSection) writeDescriptorRegistration(bw *nazabits.BitWriter, d DescriptorRegistration) {
-	bw.WriteBits16(16, uint16((d.FormatIdentifier>>16)&0xFFFF))
-	bw.WriteBits16(16, uint16(d.FormatIdentifier&0xFFFF))
-
-	if len(d.AdditionalIdentificationInfo) > 0 {
-		for _, b := range d.AdditionalIdentificationInfo {
-			bw.WriteBits8(8, b)
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func (psi *PsiSection) writeDescriptorExtension(bw *nazabits.BitWriter, d DescriptorExtension) {
-	bw.WriteBits8(8, d.Tag)
-
-	if len(d.Unknown) > 0 {
-		for _, b := range d.Unknown {
-			bw.WriteBits8(8, b)
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 type Descriptor struct {

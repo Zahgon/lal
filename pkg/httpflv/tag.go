@@ -10,8 +10,6 @@ package httpflv
 
 import (
 	"io"
-
-	"github.com/q191201771/naza/pkg/bele"
 )
 
 type TagHeader struct {
@@ -27,104 +25,41 @@ type Tag struct {
 }
 
 // Payload 只包含数据部分，去除了前面11字节的tag header和后面4字节的prev tag size
-func (tag *Tag) Payload() []byte {
-	return tag.Raw[TagHeaderSize : len(tag.Raw)-PrevTagSizeFieldSize]
-}
+func (tag *Tag) Payload() []byte { _ = "STUB: not implemented"; return nil }
 
-func (tag *Tag) IsMetadata() bool {
-	return tag.Header.Type == TagTypeMetadata
-}
+func (tag *Tag) IsMetadata() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsAvc() bool {
-	return tag.Header.Type == TagTypeVideo && (tag.Raw[TagHeaderSize]&0xF == codecIdAvc)
-}
+func (tag *Tag) IsAvc() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsHevc() bool {
-	return tag.Header.Type == TagTypeVideo && (tag.Raw[TagHeaderSize]&0xF == codecIdHevc)
-}
+func (tag *Tag) IsHevc() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsAvcKeySeqHeader() bool {
-	return tag.Header.Type == TagTypeVideo && tag.Raw[TagHeaderSize] == AvcKeyFrame && tag.Raw[TagHeaderSize+1] == AvcPacketTypeSeqHeader
-}
+func (tag *Tag) IsAvcKeySeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsHevcKeySeqHeader() bool {
-	return tag.Header.Type == TagTypeVideo && tag.Raw[TagHeaderSize] == HevcKeyFrame && tag.Raw[TagHeaderSize+1] == HevcPacketTypeSeqHeader
-}
+func (tag *Tag) IsHevcKeySeqHeader() bool { _ = "STUB: not implemented"; return false }
 
 // IsVideoKeySeqHeader AVC或HEVC的seq header
-func (tag *Tag) IsVideoKeySeqHeader() bool {
-	return tag.IsAvcKeySeqHeader() || tag.IsHevcKeySeqHeader()
-}
+func (tag *Tag) IsVideoKeySeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsAvcKeyNalu() bool {
-	return tag.Header.Type == TagTypeVideo && tag.Raw[TagHeaderSize] == AvcKeyFrame && tag.Raw[TagHeaderSize+1] == AvcPacketTypeNalu
-}
+func (tag *Tag) IsAvcKeyNalu() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsHevcKeyNalu() bool {
-	return tag.Header.Type == TagTypeVideo && tag.Raw[TagHeaderSize] == HevcKeyFrame && tag.Raw[TagHeaderSize+1] == HevcPacketTypeNalu
-}
+func (tag *Tag) IsHevcKeyNalu() bool { _ = "STUB: not implemented"; return false }
 
 // IsVideoKeyNalu AVC或HEVC的关键帧
-func (tag *Tag) IsVideoKeyNalu() bool {
-	return tag.IsAvcKeyNalu() || tag.IsHevcKeyNalu()
-}
+func (tag *Tag) IsVideoKeyNalu() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) IsAacSeqHeader() bool {
-	return tag.Header.Type == TagTypeAudio && tag.Raw[TagHeaderSize]>>4 == SoundFormatAac && tag.Raw[TagHeaderSize+1] == AacPacketTypeSeqHeader
-}
+func (tag *Tag) IsAacSeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-func (tag *Tag) clone() (out Tag) {
-	out.Header = tag.Header
-	out.Raw = append(out.Raw, tag.Raw...)
-	return
-}
+func (tag *Tag) clone() (out Tag) { _ = "STUB: not implemented"; return *new(Tag) }
 
-func (tag *Tag) ModTagTimestamp(timestamp uint32) {
-	tag.Header.Timestamp = timestamp
-
-	bele.BePutUint24(tag.Raw[4:], timestamp&0xffffff)
-	tag.Raw[7] = byte(timestamp >> 24)
-}
+func (tag *Tag) ModTagTimestamp(timestamp uint32) { _ = "STUB: not implemented"; return }
 
 // PackHttpflvTag 打包一个序列化后的 tag 二进制buffer，包含 tag header，body，prev tag size
 func PackHttpflvTag(t uint8, timestamp uint32, in []byte) []byte {
-	out := make([]byte, TagHeaderSize+len(in)+PrevTagSizeFieldSize)
-	out[0] = t
-	bele.BePutUint24(out[1:], uint32(len(in)))
-	bele.BePutUint24(out[4:], timestamp&0xFFFFFF)
-	out[7] = uint8(timestamp >> 24)
-	out[8] = 0
-	out[9] = 0
-	out[10] = 0
-	copy(out[11:], in)
-	bele.BePutUint32(out[TagHeaderSize+len(in):], uint32(TagHeaderSize+len(in)))
-	return out
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ReadTag 从`rd`中读取数据并解析至`tag`
-func ReadTag(rd io.Reader) (tag Tag, err error) {
-	rawHeader := make([]byte, TagHeaderSize)
-	if _, err = io.ReadAtLeast(rd, rawHeader, TagHeaderSize); err != nil {
-		return
-	}
-	header := parseTagHeader(rawHeader)
+func ReadTag(rd io.Reader) (tag Tag, err error) { _ = "STUB: not implemented"; return *new(Tag), nil }
 
-	needed := int(header.DataSize) + PrevTagSizeFieldSize
-	tag.Header = header
-	tag.Raw = make([]byte, TagHeaderSize+needed)
-	copy(tag.Raw, rawHeader)
-
-	if _, err = io.ReadAtLeast(rd, tag.Raw[TagHeaderSize:], needed); err != nil {
-		return
-	}
-
-	return
-}
-
-func parseTagHeader(rawHeader []byte) TagHeader {
-	var h TagHeader
-	h.Type = rawHeader[0]
-	h.DataSize = bele.BeUint24(rawHeader[1:])
-	h.Timestamp = (uint32(rawHeader[7]) << 24) + bele.BeUint24(rawHeader[4:])
-	return h
-}
+func parseTagHeader(rawHeader []byte) TagHeader { _ = "STUB: not implemented"; return *new(TagHeader) }

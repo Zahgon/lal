@@ -9,14 +9,7 @@
 package base
 
 import (
-	"encoding/hex"
-	"fmt"
-	"github.com/q191201771/naza/pkg/bele"
-	"github.com/q191201771/naza/pkg/nazabytes"
-	"github.com/q191201771/naza/pkg/nazalog"
 	"os"
-	"path/filepath"
-	"time"
 )
 
 // TODO(chef): [refactor] move to naza 202208
@@ -42,12 +35,8 @@ const (
 )
 
 func (d *DumpFile) WriteAvPacket(packet AvPacket, typ uint32) error {
-	out := make([]byte, 4+8+8+len(packet.Payload))
-	bele.BePutUint32(out, uint32(packet.PayloadType))
-	bele.BePutUint64(out[4:], uint64(packet.Timestamp))
-	bele.BePutUint64(out[12:], uint64(packet.Pts))
-	copy(out[20:], packet.Payload)
-	return d.WriteWithType(out, typ)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -69,91 +58,37 @@ type DumpFileMessage struct {
 	Body      []byte
 }
 
-func NewDumpFile() *DumpFile {
-	return &DumpFile{}
-}
+func NewDumpFile() *DumpFile { _ = "STUB: not implemented"; return nil }
 
-func (d *DumpFile) OpenToWrite(filename string) (err error) {
-	dir := filepath.Dir(filename)
-	if err = os.MkdirAll(dir, 0755); err != nil {
-		return err
-	}
-	d.file, err = os.Create(filename)
-	return d.WriteWithType([]byte(LalFullInfo), DumpTypeInnerFileHeaderData)
-}
+func (d *DumpFile) OpenToWrite(filename string) (err error) { _ = "STUB: not implemented"; return nil }
 
-func (d *DumpFile) OpenToRead(filename string) (err error) {
-	d.file, err = os.Open(filename)
-	return
-}
+func (d *DumpFile) OpenToRead(filename string) (err error) { _ = "STUB: not implemented"; return nil }
 
-func (d *DumpFile) WriteWithType(b []byte, typ uint32) error {
-	_, err := d.file.Write(d.pack(b, typ))
-	return err
-}
+func (d *DumpFile) WriteWithType(b []byte, typ uint32) error { _ = "STUB: not implemented"; return nil }
 
 func (d *DumpFile) ReadOneMessage() (m DumpFileMessage, err error) {
-	m.Ver, err = bele.ReadBeUint32(d.file)
-	if err != nil {
-		return
-	}
-
-	if m.Ver < writeVer {
-		nazalog.Warnf("invalid ver. ver=%d", m.Ver)
-	}
-
-	m.Typ, err = bele.ReadBeUint32(d.file)
-	if err != nil {
-		return
-	}
-	m.Len, err = bele.ReadBeUint32(d.file)
-	if err != nil {
-		return
-	}
-	m.Timestamp, err = bele.ReadBeUint64(d.file)
-	if err != nil {
-		return
-	}
-	m.Reserve, err = bele.ReadBeUint32(d.file)
-	if err != nil {
-		return
-	}
-
-	m.Body = make([]byte, m.Len)
-	_, err = d.file.Read(m.Body)
-	return
+	_ = "STUB: not implemented"
+	return *new(DumpFileMessage), nil
 }
 
-func (d *DumpFile) Close() error {
-	if d.file == nil {
-		return nil
-	}
-	return d.file.Close()
-}
+func (d *DumpFile) Close() error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (m *DumpFileMessage) DebugString() string {
-	return fmt.Sprintf("ver: %d, typ: %d, len: %d, timestamp: %d, len: %d, hex: %s",
-		m.Ver, m.Typ, m.Len, m.Timestamp, len(m.Body), hex.Dump(nazabytes.Prefix(m.Body, 16)))
-}
+func (m *DumpFileMessage) DebugString() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (d *DumpFile) pack(b []byte, typ uint32) []byte {
+	_ = "STUB: not implemented"
 	// TODO(chef): [perf] 优化这块内存 202211
-	ret := make([]byte, len(b)+24)
-	i := 0
-	bele.BePutUint32(ret[i:], writeVer) // Ver
-	i += 4
-	bele.BePutUint32(ret[i:], typ) // Typ
-	i += 4
-	bele.BePutUint32(ret[i:], uint32(len(b))) // Len
-	i += 4
-	bele.BePutUint64(ret[i:], uint64(UnixMilli(time.Now()))) // Timestamp
-	i += 8
-	copy(ret[i:], "LALD")
-	i += 4
-	copy(ret[i:], b)
-	return ret
+	return nil
 }
+
+// Ver
+
+// Typ
+
+// Len
+
+// Timestamp

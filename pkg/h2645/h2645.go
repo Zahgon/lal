@@ -8,12 +8,6 @@
 
 package h2645
 
-import (
-	"github.com/q191201771/lal/pkg/avc"
-	"github.com/q191201771/lal/pkg/hevc"
-	"github.com/q191201771/naza/pkg/bele"
-)
-
 // TODO(chef): 逐渐将package avc, hevc迁移到package h2645，这个package处于开发阶段，如果内容不全，请使用package avc, hevc
 
 // 无特殊说明的函数则同时支持h264和h265两种格式
@@ -65,49 +59,22 @@ const (
 
 // IterateNaluAvcc 遍历Avcc格式的nalu流
 func IterateNaluAvcc(nals []byte, handler func(nal []byte)) error {
-	return avc.IterateNaluAvcc(nals, handler)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func IterateNaluStartCode(nalu []byte, start int) (pos, length int) {
-	return avc.IterateNaluStartCode(nalu, start)
+	_ = "STUB: not implemented"
+	return 0, 0
 }
 
-func ParseNaluType(isH264 bool, v uint8) uint8 {
-	if isH264 {
-		return avc.ParseNaluType(v)
-	}
-	return hevc.ParseNaluType(v)
-}
+func ParseNaluType(isH264 bool, v uint8) uint8 { _ = "STUB: not implemented"; return 0 }
 
 func SeqHeader2Annexb(isH264 bool, payload []byte) ([]byte, error) {
-	if isH264 {
-		return avc.SpsPpsSeqHeader2Annexb(payload)
-	}
-	return hevc.VpsSpsPpsSeqHeader2Annexb(payload)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func H265IsIrapNalu(typ uint8) bool {
-	return hevc.IsIrapNalu(typ)
-}
+func H265IsIrapNalu(typ uint8) bool { _ = "STUB: not implemented"; return false }
 
-func JoinNaluAvcc(naluList ...[]byte) []byte {
-	n := len(naluList)
-	if n == 0 {
-		return nil
-	}
-	n *= 4
-	for _, item := range naluList {
-		n += len(item)
-	}
-	ret := make([]byte, n)
-
-	pos := 0
-	for _, item := range naluList {
-		bele.BePutUint32(ret[pos:], uint32(len(item)))
-		pos += 4
-		copy(ret[pos:], item)
-		pos += len(item)
-	}
-
-	return ret
-}
+func JoinNaluAvcc(naluList ...[]byte) []byte { _ = "STUB: not implemented"; return nil }

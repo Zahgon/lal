@@ -9,8 +9,6 @@
 package rtmp
 
 import (
-	"encoding/hex"
-	"fmt"
 	"github.com/q191201771/naza/pkg/nazabytes"
 
 	"github.com/q191201771/lal/pkg/base"
@@ -26,29 +24,15 @@ type Stream struct {
 	timestamp uint32 // 注意，是rtmp chunk协议header中的时间戳，可能是绝对的，也可能是相对的。上层不应该使用这个字段，而应该使用Header.TimestampAbs
 }
 
-func NewStream() *Stream {
-	return &Stream{
-		msg: StreamMsg{
-			buff: nazabytes.NewBuffer(initMsgLen),
-		},
-	}
-}
+func NewStream() *Stream { _ = "STUB: not implemented"; return nil }
 
 // 序列化成可读字符串，一般用于发生错误时打印日志
-func (stream *Stream) toDebugString() string {
-	return fmt.Sprintf("header=%+v, b=%s, hex=%s",
-		stream.header, stream.msg.buff.DebugString(), hex.Dump(stream.msg.buff.Peek(4096)))
-}
+func (stream *Stream) toDebugString() string { _ = "STUB: not implemented"; return "" }
 
 func (stream *Stream) toAvMsg() base.RtmpMsg {
+	_ = "STUB: not implemented"
 	// TODO chef: 考虑可能出现header中的len和buf的大小不一致的情况
-	if stream.header.MsgLen != uint32(stream.msg.buff.Len()) {
-		Log.Errorf("toAvMsg. headerMsgLen=%d, bufLen=%d", stream.header.MsgLen, stream.msg.buff.Len())
-	}
-	return base.RtmpMsg{
-		Header:  stream.header,
-		Payload: stream.msg.buff.Bytes(),
-	}
+	return *new(base.RtmpMsg)
 }
 
 // ----- StreamMsg -----------------------------------------------------------------------------------------------------
@@ -59,63 +43,33 @@ type StreamMsg struct {
 }
 
 // Grow 确保可写空间，如果不够会扩容
-func (msg *StreamMsg) Grow(n uint32) {
-	msg.buff.Grow(int(n))
-}
+func (msg *StreamMsg) Grow(n uint32) { _ = "STUB: not implemented"; return }
 
-func (msg *StreamMsg) Len() uint32 {
-	return uint32(msg.buff.Len())
-}
+func (msg *StreamMsg) Len() uint32 { _ = "STUB: not implemented"; return 0 }
 
-func (msg *StreamMsg) Flush(n uint32) {
-	msg.buff.Flush(int(n))
-}
+func (msg *StreamMsg) Flush(n uint32) { _ = "STUB: not implemented"; return }
 
-func (msg *StreamMsg) Skip(n uint32) {
-	msg.buff.Skip(int(n))
-}
+func (msg *StreamMsg) Skip(n uint32) { _ = "STUB: not implemented"; return }
 
-func (msg *StreamMsg) Reset() {
-	msg.buff.Reset()
-}
+func (msg *StreamMsg) Reset() { _ = "STUB: not implemented"; return }
 
-func (msg *StreamMsg) ResetAndFree() {
-	msg.buff.ResetAndFree()
-}
+func (msg *StreamMsg) ResetAndFree() { _ = "STUB: not implemented"; return }
 
 func (msg *StreamMsg) peekStringWithType() (string, error) {
-	str, _, err := Amf0.ReadString(msg.buff.Bytes())
-	return str, err
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 func (msg *StreamMsg) readStringWithType() (string, error) {
-	str, l, err := Amf0.ReadString(msg.buff.Bytes())
-	if err == nil {
-		msg.Skip(uint32(l))
-	}
-	return str, err
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
-func (msg *StreamMsg) readNumberWithType() (int, error) {
-	val, l, err := Amf0.ReadNumber(msg.buff.Bytes())
-	if err == nil {
-		msg.Skip(uint32(l))
-	}
-	return int(val), err
-}
+func (msg *StreamMsg) readNumberWithType() (int, error) { _ = "STUB: not implemented"; return 0, nil }
 
 func (msg *StreamMsg) readObjectWithType() (ObjectPairArray, error) {
-	opa, l, err := Amf0.ReadObject(msg.buff.Bytes())
-	if err == nil {
-		msg.Skip(uint32(l))
-	}
-	return opa, err
+	_ = "STUB: not implemented"
+	return *new(ObjectPairArray), nil
 }
 
-func (msg *StreamMsg) readNull() error {
-	l, err := Amf0.ReadNull(msg.buff.Bytes())
-	if err == nil {
-		msg.Skip(uint32(l))
-	}
-	return err
-}
+func (msg *StreamMsg) readNull() error { _ = "STUB: not implemented"; return nil }

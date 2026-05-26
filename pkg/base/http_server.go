@@ -9,12 +9,8 @@
 package base
 
 import (
-	"crypto/tls"
 	"net"
 	"net/http"
-	"reflect"
-
-	"github.com/q191201771/naza/pkg/nazaerrors"
 )
 
 // TODO(chef): [refactor] 考虑移入naza中 202211
@@ -44,11 +40,7 @@ type ServerCtx struct {
 	pattern2Handler map[string]Handler
 }
 
-func NewHttpServerManager() *HttpServerManager {
-	return &HttpServerManager{
-		addr2ServerCtx: make(map[string]*ServerCtx),
-	}
-}
+func NewHttpServerManager() *HttpServerManager { _ = "STUB: not implemented"; return nil }
 
 type Handler func(http.ResponseWriter, *http.Request)
 
@@ -70,92 +62,26 @@ type Handler func(http.ResponseWriter, *http.Request)
 //	注意，如果是`/`，则在其他所有pattern都匹配失败后，做为兜底匹配成功。
 //	相同的pattern不能绑定不同的`handler`回调函数（显然，我们无法为相同的监听地址，相同的路径绑定多个回调函数）。
 func (s *HttpServerManager) AddListen(addrCtx LocalAddrCtx, pattern string, handler Handler) error {
-	var (
-		ctx *ServerCtx
-		mux *http.ServeMux
-		ok  bool
-	)
-
-	if addrCtx.Addr == "" {
-		return ErrAddrEmpty
-	}
-
-	// 监听地址是否已经创建过
-	ctx, ok = s.addr2ServerCtx[addrCtx.Addr]
-	if !ok {
-		l, err := listen(addrCtx)
-		if err != nil {
-			return err
-		}
-		mux = http.NewServeMux()
-		ctx = &ServerCtx{
-			addrCtx:  addrCtx,
-			listener: l,
-			httpServer: http.Server{
-				Handler: mux,
-			},
-			mux:             mux,
-			pattern2Handler: make(map[string]Handler),
-		}
-		s.addr2ServerCtx[addrCtx.Addr] = ctx
-	}
-
-	// 路径相同，比较回调函数是否相同
-	// 如果回调函数也相同，意味着重复绑定，这种情况是允许的，忽略掉就行了
-	// 如果回调函数不同，返回错误
-	if prevHandler, ok := ctx.pattern2Handler[pattern]; ok {
-		if reflect.ValueOf(prevHandler).Pointer() == reflect.ValueOf(handler).Pointer() {
-			return nil
-		} else {
-			return ErrMultiRegisterForPattern
-		}
-	}
-	ctx.pattern2Handler[pattern] = handler
-
-	ctx.mux.HandleFunc(pattern, handler)
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func (s *HttpServerManager) RunLoop() error {
-	errChan := make(chan error, len(s.addr2ServerCtx))
+// 监听地址是否已经创建过
 
-	for _, v := range s.addr2ServerCtx {
-		go func(ctx *ServerCtx) {
-			errChan <- ctx.httpServer.Serve(ctx.listener)
+// 路径相同，比较回调函数是否相同
+// 如果回调函数也相同，意味着重复绑定，这种情况是允许的，忽略掉就行了
+// 如果回调函数不同，返回错误
 
-			_ = ctx.httpServer.Close()
-		}(v)
-	}
+func (s *HttpServerManager) RunLoop() error { _ = "STUB: not implemented"; return nil }
 
-	// 阻塞直到接到第一个error
-	return <-errChan
-}
+// 阻塞直到接到第一个error
 
-func (s *HttpServerManager) Dispose() error {
-	var es []error
-	for _, v := range s.addr2ServerCtx {
-		err := v.httpServer.Close()
-		es = append(es, err)
-	}
-	return nazaerrors.CombineErrors(es...)
-}
+func (s *HttpServerManager) Dispose() error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 // 为传入的`Addr`地址创建http或https监听
 func listen(ctx LocalAddrCtx) (net.Listener, error) {
-	if ctx.Network == "" {
-		ctx.Network = NetworkTcp
-	}
-
-	if !ctx.IsHttps {
-		return net.Listen(ctx.Network, ctx.Addr)
-	}
-
-	cert, err := tls.LoadX509KeyPair(ctx.CertFile, ctx.KeyFile)
-	if err != nil {
-		return nil, err
-	}
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cert}}
-	return tls.Listen(ctx.Network, ctx.Addr, tlsConfig)
+	_ = "STUB: not implemented"
+	return *new(net.Listener), nil
 }

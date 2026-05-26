@@ -10,6 +10,7 @@ package rtmp
 
 import (
 	"crypto/tls"
+
 	"github.com/q191201771/lal/pkg/base"
 )
 
@@ -48,31 +49,15 @@ var defaultPushSessionOption = PushSessionOption{
 type ModPushSessionOption func(option *PushSessionOption)
 
 func NewPushSession(modOptions ...ModPushSessionOption) *PushSession {
-	opt := defaultPushSessionOption
-	for _, fn := range modOptions {
-		fn(&opt)
-	}
-	return &PushSession{
-		IsFresh: true,
-		core: NewClientSession(base.SessionTypeRtmpPush, func(option *ClientSessionOption) {
-			option.DoTimeoutMs = opt.PushTimeoutMs
-			option.WriteAvTimeoutMs = opt.WriteAvTimeoutMs
-			option.WriteBufSize = opt.WriteBufSize
-			option.WriteChanSize = opt.WriteChanSize
-			option.HandshakeComplexFlag = opt.HandshakeComplexFlag
-		}),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Start 阻塞直到和对端完成推流前，握手部分的工作（也即收到RTMP Publish response），或者发生错误
-func (s *PushSession) Start(rawUrl string) error {
-	return s.core.Start(rawUrl)
-}
+func (s *PushSession) Start(rawUrl string) error { _ = "STUB: not implemented"; return nil }
 
 // Push deprecated. use Start instead.
-func (s *PushSession) Push(rawUrl string) error {
-	return s.Start(rawUrl)
-}
+func (s *PushSession) Push(rawUrl string) error { _ = "STUB: not implemented"; return nil }
 
 // Write 发送数据
 //
@@ -81,71 +66,53 @@ func (s *PushSession) Push(rawUrl string) error {
 //	注意，`b`数据应该是已经打包成rtmp chunk格式的数据。这里的数据就对应socket发送的数据，内部不会再修改数据内容。
 //	如果要发送 base.RtmpMsg 数据，请使用 WriteMsg 函数。
 func (s *PushSession) Write(b []byte) error {
+	_ = "STUB: not implemented"
 	// TODO(chef): [opt] 使用Write函数时确保metadata有@SetDataFrame 202207
-
-	return s.core.Write(b)
+	return nil
 }
 
 // WriteMsg
 //
 // 内部会根据 msg 的包头字段和包体数据，打包成 rtmp chunk 格式的数据，然后发送。
 // 如果想要自己控制打包过程，请使用 Write 函数直接发送数据。
-func (s *PushSession) WriteMsg(msg base.RtmpMsg) error {
-	return s.Write(Message2Chunks(msg.Payload, &msg.Header))
-}
+func (s *PushSession) WriteMsg(msg base.RtmpMsg) error { _ = "STUB: not implemented"; return nil }
 
 // Flush 将缓存的数据立即刷新发送
 // 是否有缓存策略，请参见配置及内部实现
-func (s *PushSession) Flush() error {
-	return s.core.Flush()
-}
+func (s *PushSession) Flush() error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IClientSessionLifecycle interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Dispose 文档请参考： IClientSessionLifecycle interface
-func (s *PushSession) Dispose() error {
-	return s.core.Dispose()
-}
+func (s *PushSession) Dispose() error { _ = "STUB: not implemented"; return nil }
 
 // WaitChan 文档请参考： IClientSessionLifecycle interface
-func (s *PushSession) WaitChan() <-chan error {
-	return s.core.WaitChan()
-}
+func (s *PushSession) WaitChan() <-chan error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionUrlContext interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Url 文档请参考： interface ISessionUrlContext
-func (s *PushSession) Url() string {
-	return s.core.Url()
-}
+func (s *PushSession) Url() string { _ = "STUB: not implemented"; return "" }
 
 // AppName 文档请参考： interface ISessionUrlContext
-func (s *PushSession) AppName() string {
-	return s.core.AppName()
-}
+func (s *PushSession) AppName() string { _ = "STUB: not implemented"; return "" }
 
 // StreamName 文档请参考： interface ISessionUrlContext
-func (s *PushSession) StreamName() string {
-	return s.core.StreamName()
-}
+func (s *PushSession) StreamName() string { _ = "STUB: not implemented"; return "" }
 
 // RawQuery 文档请参考： interface ISessionUrlContext
-func (s *PushSession) RawQuery() string {
-	return s.core.RawQuery()
-}
+func (s *PushSession) RawQuery() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IObject interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // UniqueKey 文档请参考： interface IObject
-func (s *PushSession) UniqueKey() string {
-	return s.core.UniqueKey()
-}
+func (s *PushSession) UniqueKey() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionStat interface
@@ -153,15 +120,17 @@ func (s *PushSession) UniqueKey() string {
 
 // GetStat 文档请参考： interface ISessionStat
 func (s *PushSession) GetStat() base.StatSession {
-	return s.core.GetStat()
+	_ = "STUB: not implemented"
+	return *
+
+	// UpdateStat 文档请参考： interface ISessionStat
+	new(base.StatSession)
 }
 
-// UpdateStat 文档请参考： interface ISessionStat
-func (s *PushSession) UpdateStat(intervalSec uint32) {
-	s.core.UpdateStat(intervalSec)
-}
+func (s *PushSession) UpdateStat(intervalSec uint32) { _ = "STUB: not implemented"; return }
 
 // IsAlive 文档请参考： interface ISessionStat
 func (s *PushSession) IsAlive() (readAlive, writeAlive bool) {
-	return s.core.IsAlive()
+	_ = "STUB: not implemented"
+	return false, false
 }

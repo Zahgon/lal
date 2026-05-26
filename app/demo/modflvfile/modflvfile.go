@@ -9,9 +9,7 @@
 package main
 
 import (
-	"flag"
 	"io"
-	"time"
 
 	"github.com/q191201771/lal/pkg/base"
 
@@ -28,12 +26,7 @@ var countA int
 var countV int
 var exitFlag bool
 
-func hookTag(tag *httpflv.Tag) {
-	nazalog.Infof("%+v", tag.Header)
-	if tag.Header.Timestamp != 0 {
-		tag.ModTagTimestamp(tag.Header.Timestamp + uint32(time.Now().Unix()/1e6))
-	}
-}
+func hookTag(tag *httpflv.Tag) { _ = "STUB: not implemented"; return }
 
 func main() {
 	_ = nazalog.Init(func(option *nazalog.Option) {
@@ -76,13 +69,4 @@ func main() {
 	}
 }
 
-func parseFlag() (string, string) {
-	i := flag.String("i", "", "specify input flv file")
-	o := flag.String("o", "", "specify output flv file")
-	flag.Parse()
-	if *i == "" || *o == "" {
-		flag.Usage()
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *i, *o
-}
+func parseFlag() (string, string) { _ = "STUB: not implemented"; return "", "" }

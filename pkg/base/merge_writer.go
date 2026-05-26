@@ -32,43 +32,21 @@ type OnWritev func(bs net.Buffers)
 // @param onWritev 回调缓存的1~n个内存块
 // @param size     回调阈值
 func NewMergeWriter(onWritev OnWritev, size int) *MergeWriter {
-	return &MergeWriter{
-		onWritev: onWritev,
-		size:     size,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Write
 //
 // 注意，函数调用结束后，`b`内存块会被内部持有
-func (w *MergeWriter) Write(b []byte) {
-	Log.Debugf("[%p] MergeWriter::Write. len=%d", w, len(b))
-	w.bs = append(w.bs, b)
-	w.currSize += len(b)
-	if w.currSize >= w.size {
-		w.flush()
-	}
-}
+func (w *MergeWriter) Write(b []byte) { _ = "STUB: not implemented"; return }
 
 // Flush 强制将内部缓冲的数据全部回调排空
-func (w *MergeWriter) Flush() {
-	Log.Debugf("[%p] MergeWriter::Flush.", w)
-	if w.currSize > 0 {
-		w.flush()
-	}
-}
+func (w *MergeWriter) Flush() { _ = "STUB: not implemented"; return }
 
 // flush 将内部缓冲的数据全部回调排空
 func (w *MergeWriter) flush() {
+	_ = "STUB: not implemented"
 	// only for debug log
-	var n int
-	var ns []int
-	for _, v := range w.bs {
-		n += len(v)
-		ns = append(ns, len(v))
-	}
-	Log.Debugf("[%p] MergeWriter::flush. len=%d(%v)", w, n, ns)
-	w.onWritev(w.bs)
-	w.currSize = 0
-	w.bs = nil
+	return
 }

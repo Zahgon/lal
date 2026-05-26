@@ -9,12 +9,10 @@
 package main
 
 import (
-	"flag"
-	"fmt"
+	"time"
+
 	"github.com/q191201771/lal/pkg/rtprtcp"
 	"github.com/q191201771/lal/pkg/sdp"
-	"os"
-	"time"
 
 	"github.com/q191201771/lal/pkg/base"
 	"github.com/q191201771/lal/pkg/httpflv"
@@ -30,24 +28,14 @@ var dump *base.DumpFile
 
 type Observer struct{}
 
-func (o *Observer) OnSdp(sdpCtx sdp.LogicContext) {
-	nazalog.Debugf("OnSdp %+v", sdpCtx)
-	if dump != nil {
-		dump.WriteWithType(sdpCtx.RawSdp, base.DumpTypeRtspSdpData)
-	}
-	remuxer.OnSdp(sdpCtx)
-}
+func (o *Observer) OnSdp(sdpCtx sdp.LogicContext) { _ = "STUB: not implemented"; return }
 
-func (o *Observer) OnRtpPacket(pkt rtprtcp.RtpPacket) {
-	if dump != nil {
-		dump.WriteWithType(pkt.Raw, base.DumpTypeRtspRtpData)
-	}
-	remuxer.OnRtpPacket(pkt)
-}
+func (o *Observer) OnRtpPacket(pkt rtprtcp.RtpPacket) { _ = "STUB: not implemented"; return }
 
 func (o *Observer) OnAvPacket(pkt base.AvPacket) {
-	//nazalog.Debugf("OnAvPacket %+v", pkt.DebugString())
-	remuxer.OnAvPacket(pkt)
+	_ = "STUB: not implemented"
+	// nazalog.Debugf("OnAvPacket %+v", pkt.DebugString())
+	return
 }
 
 func main() {
@@ -109,21 +97,6 @@ func main() {
 }
 
 func parseFlag() (inUrl string, outFilename string, overTcp int, debugDumpPacket string) {
-	i := flag.String("i", "", "specify pull rtsp url")
-	o := flag.String("o", "", "specify output flv file")
-
-	t := flag.Int("t", 0, "specify interleaved mode(rtp/rtcp over tcp)")
-	d := flag.String("d", "", "specify debug dump packet filename")
-
-	flag.Parse()
-	if *i == "" || *o == "" {
-		flag.Usage()
-		_, _ = fmt.Fprintf(os.Stderr, `Example:
-  %s -i rtsp://localhost:5544/live/test110 -o outpullrtsp.flv -t 0
-  %s -i rtsp://localhost:5544/live/test110 -o outpullrtsp.flv -t 1
-  %s -i rtsp://localhost:5544/live/test110 -o outpullrtsp.flv -t 0 -d outpullrtsp.laldump
-`, os.Args[0], os.Args[0], os.Args[0])
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *i, *o, *t, *d
+	_ = "STUB: not implemented"
+	return "", "", 0, ""
 }

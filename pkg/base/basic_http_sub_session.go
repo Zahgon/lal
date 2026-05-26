@@ -10,7 +10,6 @@ package base
 
 import (
 	"net"
-	"strings"
 
 	"github.com/q191201771/naza/pkg/connection"
 )
@@ -33,108 +32,66 @@ type BasicHttpSubSessionOption struct {
 }
 
 func NewBasicHttpSubSession(option BasicHttpSubSessionOption) *BasicHttpSubSession {
-	s := &BasicHttpSubSession{
-		BasicHttpSubSessionOption: option,
-		conn:                      connection.New(option.Conn, option.ConnModOption),
-		sessionStat:               NewBasicSessionStat(option.SessionType, option.Conn.RemoteAddr().String()),
-	}
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IServerSessionLifecycle interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *BasicHttpSubSession) RunLoop() error {
-	buf := make([]byte, 128)
-	_, err := session.conn.Read(buf)
-	return err
-}
+func (session *BasicHttpSubSession) RunLoop() error { _ = "STUB: not implemented"; return nil }
 
-func (session *BasicHttpSubSession) Dispose() error {
-	return session.conn.Close()
-}
+func (session *BasicHttpSubSession) Dispose() error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (session *BasicHttpSubSession) WriteHttpResponseHeader(b []byte) {
-	if session.IsWebSocket {
-		session.write(UpdateWebSocketHeader(session.WebSocketKey, ""))
-	} else {
-		session.write(b)
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func (session *BasicHttpSubSession) Write(b []byte) {
-	if session.IsWebSocket {
-		wsHeader := WsHeader{
-			Fin:           true,
-			Rsv1:          false,
-			Rsv2:          false,
-			Rsv3:          false,
-			Opcode:        Wso_Binary,
-			PayloadLength: uint64(len(b)),
-			Masked:        false,
-		}
-		session.write(MakeWsFrameHeader(wsHeader))
-	}
-	session.write(b)
-}
+func (session *BasicHttpSubSession) Write(b []byte) { _ = "STUB: not implemented"; return }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IObject interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *BasicHttpSubSession) UniqueKey() string {
-	return session.sessionStat.UniqueKey()
-}
+func (session *BasicHttpSubSession) UniqueKey() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionUrlContext interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *BasicHttpSubSession) Url() string {
-	return session.UrlCtx.Url
-}
+func (session *BasicHttpSubSession) Url() string { _ = "STUB: not implemented"; return "" }
 
-func (session *BasicHttpSubSession) AppName() string {
-	return session.UrlCtx.PathWithoutLastItem
-}
+func (session *BasicHttpSubSession) AppName() string { _ = "STUB: not implemented"; return "" }
 
-func (session *BasicHttpSubSession) StreamName() string {
-	var suffix string
-	switch session.SessionType {
-	case SessionTypeFlvSub:
-		suffix = ".flv"
-	case SessionTypeTsSub:
-		suffix = ".ts"
-	default:
-		Log.Warnf("[%s] acquire stream name but protocol unknown.", session.UniqueKey())
-	}
-	return strings.TrimSuffix(session.UrlCtx.LastItemOfPath, suffix)
-}
+func (session *BasicHttpSubSession) StreamName() string { _ = "STUB: not implemented"; return "" }
 
-func (session *BasicHttpSubSession) RawQuery() string {
-	return session.UrlCtx.RawQuery
-}
+func (session *BasicHttpSubSession) RawQuery() string { _ = "STUB: not implemented"; return "" }
 
 // ----- ISessionStat --------------------------------------------------------------------------------------------------
 
 func (session *BasicHttpSubSession) GetStat() StatSession {
-	return session.sessionStat.GetStat()
+	_ = "STUB: not implemented"
+	return *new(StatSession)
 }
 
 func (session *BasicHttpSubSession) UpdateStat(intervalSec uint32) {
-	session.sessionStat.UpdateStatWitchConn(session.conn, intervalSec)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (session *BasicHttpSubSession) IsAlive() (readAlive, writeAlive bool) {
-	return session.sessionStat.IsAliveWitchConn(session.conn)
+	_ = "STUB: not implemented"
+	return false, false
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 func (session *BasicHttpSubSession) write(b []byte) {
+	_ = "STUB: not implemented"
 	// TODO(chef) handle write error
-	_, _ = session.conn.Write(b)
+	return
 }

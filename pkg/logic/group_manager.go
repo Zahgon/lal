@@ -54,41 +54,26 @@ type SimpleGroupManager struct {
 }
 
 func NewSimpleGroupManager(groupCreator IGroupCreator) *SimpleGroupManager {
-	return &SimpleGroupManager{
-		groupCreator: groupCreator,
-		groups:       make(map[string]*Group),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (s *SimpleGroupManager) GetOrCreateGroup(appName string, streamName string) (group *Group, createFlag bool) {
-	g := s.GetGroup(appName, streamName)
-	if g == nil {
-		g = s.groupCreator.CreateGroup(appName, streamName)
-		s.groups[streamName] = g
-		return g, true
-	}
-	return g, false
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 func (s *SimpleGroupManager) GetGroup(appName string, streamName string) *Group {
-	g, ok := s.groups[streamName]
-	if !ok {
-		return nil
-	}
-	return g
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (s *SimpleGroupManager) Iterate(onIterateGroup func(group *Group) bool) {
-	for streamName, group := range s.groups {
-		if !onIterateGroup(group) {
-			delete(s.groups, streamName)
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func (s *SimpleGroupManager) Len() int {
-	return len(s.groups)
-}
+func (s *SimpleGroupManager) Len() int { _ = "STUB: not implemented"; return 0 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -130,102 +115,42 @@ type ComplexGroupManager struct {
 }
 
 func NewComplexGroupManager(groupCreator IGroupCreator) *ComplexGroupManager {
-	return &ComplexGroupManager{
-		groupCreator:            groupCreator,
-		onlyStreamNameGroups:    make(map[string]*Group),
-		appNameStreamNameGroups: make(map[string]map[string]*Group),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (gm *ComplexGroupManager) GetOrCreateGroup(appName string, streamName string) (group *Group, createFlag bool) {
-	return gm.getGroup(appName, streamName, true)
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 func (gm *ComplexGroupManager) GetGroup(appName string, streamName string) *Group {
-	g, _ := gm.getGroup(appName, streamName, false)
-	return g
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (gm *ComplexGroupManager) getGroup(appName string, streamName string, shouldCreate bool) (group *Group, createFlag bool) {
-	var ok bool
-	if appName == "" {
-		group, ok = gm.onlyStreamNameGroups[streamName]
-		if ok {
-			return group, false
-		}
-		// 虽然没有appName，也有可能在appNameStreamNameGroups中，我们遍历查找
-		//
-		// 注意，此时有可能不同appName的容器里都有对应这个streamName的group，但是程序已没法区分，系统使用者应规范流名称避免出现这种问题
-		//
-		for _, m := range gm.appNameStreamNameGroups {
-			group, ok = m[streamName]
-			if ok {
-				return group, false
-			}
-		}
-
-		// 两个容器都没找到
-		if shouldCreate {
-			group = gm.groupCreator.CreateGroup(appName, streamName)
-			gm.onlyStreamNameGroups[streamName] = group
-			return group, true
-		} else {
-			return nil, false
-		}
-	} else { // appName存在
-		// 先在对应appName中查找
-		m, mok := gm.appNameStreamNameGroups[appName]
-		if mok {
-			group, ok = m[streamName]
-			if ok {
-				return group, false
-			}
-		}
-
-		// 虽然有appName，也有可能在onlyStreamNameGroups中，我们尝试一下
-		group, ok = gm.onlyStreamNameGroups[streamName]
-		if ok {
-			return group, false
-		}
-
-		// 都没有找到
-		if shouldCreate {
-			group = gm.groupCreator.CreateGroup(appName, streamName)
-			if !mok {
-				m = make(map[string]*Group)
-				gm.appNameStreamNameGroups[appName] = m
-			}
-			m[streamName] = group
-			return group, true
-		} else {
-			return nil, false
-		}
-	}
+	_ = "STUB: not implemented"
+	return nil, false
 }
+
+// 虽然没有appName，也有可能在appNameStreamNameGroups中，我们遍历查找
+//
+// 注意，此时有可能不同appName的容器里都有对应这个streamName的group，但是程序已没法区分，系统使用者应规范流名称避免出现这种问题
+//
+
+// 两个容器都没找到
+
+// appName存在
+// 先在对应appName中查找
+
+// 虽然有appName，也有可能在onlyStreamNameGroups中，我们尝试一下
+
+// 都没有找到
 
 func (gm *ComplexGroupManager) Iterate(onIterateGroup func(group *Group) bool) {
-	for streamName, group := range gm.onlyStreamNameGroups {
-		if !onIterateGroup(group) {
-			delete(gm.onlyStreamNameGroups, streamName)
-		}
-	}
-
-	for appName, m := range gm.appNameStreamNameGroups {
-		for streamName, group := range m {
-			if !onIterateGroup(group) {
-				delete(m, streamName)
-				if len(m) == 0 {
-					delete(gm.appNameStreamNameGroups, appName)
-				}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func (gm *ComplexGroupManager) Len() int {
-	var c int
-	for _, m := range gm.appNameStreamNameGroups {
-		c += len(m)
-	}
-	return c + len(gm.onlyStreamNameGroups)
-}
+func (gm *ComplexGroupManager) Len() int { _ = "STUB: not implemented"; return 0 }

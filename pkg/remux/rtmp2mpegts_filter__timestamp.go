@@ -10,7 +10,6 @@ package remux
 
 import (
 	"github.com/q191201771/lal/pkg/mpegts"
-	"math"
 )
 
 // Rtmp2MpegtsTimestampFilter
@@ -29,35 +28,9 @@ type Rtmp2MpegtsTimestampFilter struct {
 	basicVideoDts uint64
 }
 
-func (f *Rtmp2MpegtsTimestampFilter) Init(uk string) {
-	f.uk = uk
-	f.basicAudioDts = math.MaxUint64
-	f.basicVideoDts = math.MaxUint64
-}
+func (f *Rtmp2MpegtsTimestampFilter) Init(uk string) { _ = "STUB: not implemented"; return }
 
 // Do
 //
 // @param frame: 直接修改frame中的dts和pts
-func (f *Rtmp2MpegtsTimestampFilter) Do(frame *mpegts.Frame) {
-	if frame.Sid == mpegts.StreamIdAudio {
-		if f.basicAudioDts == math.MaxUint64 {
-			f.basicAudioDts = frame.Dts
-		}
-		if frame.Dts < f.basicAudioDts {
-			Log.Warnf("[%s] audio dts invalid. dts=%d, base=%d, frame=%s", f.uk, frame.Dts, f.basicAudioDts, frame.DebugString())
-		} else {
-			frame.Dts -= f.basicAudioDts
-		}
-		frame.Pts = frame.Dts + 90*uint64(frame.Cts)
-	} else if frame.Sid == mpegts.StreamIdVideo {
-		if f.basicVideoDts == math.MaxUint64 {
-			f.basicVideoDts = frame.Dts
-		}
-		if frame.Dts < f.basicVideoDts {
-			Log.Warnf("[%s] video dts invalid. dts=%d, base=%d, frame=%s", f.uk, frame.Dts, f.basicVideoDts, frame.DebugString())
-		} else {
-			frame.Dts -= f.basicVideoDts
-		}
-		frame.Pts = frame.Dts + 90*uint64(frame.Cts)
-	}
-}
+func (f *Rtmp2MpegtsTimestampFilter) Do(frame *mpegts.Frame) { _ = "STUB: not implemented"; return }

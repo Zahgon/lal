@@ -8,14 +8,6 @@
 
 package base
 
-import (
-	"encoding/hex"
-	"fmt"
-
-	"github.com/q191201771/naza/pkg/bele"
-	"github.com/q191201771/naza/pkg/nazabytes"
-)
-
 const (
 	// RtmpTypeIdAudio spec-rtmp_specification_1.0.pdf
 	// 7.1. Types of Messages
@@ -137,166 +129,43 @@ type RtmpMsg struct {
 	Payload []byte // Payload不包含Header内容。如果需要将RtmpMsg序列化成RTMP chunk，可调用 rtmp.ChunkDivider 相关的函数
 }
 
-func (msg RtmpMsg) IsAvcKeySeqHeader() bool {
-	return msg.Header.MsgTypeId == RtmpTypeIdVideo && msg.Payload[0] == RtmpAvcKeyFrame && msg.Payload[1] == RtmpAvcPacketTypeSeqHeader
-}
+func (msg RtmpMsg) IsAvcKeySeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-func (msg RtmpMsg) IsHevcKeySeqHeader() bool {
-	if msg.Header.MsgTypeId != RtmpTypeIdVideo {
-		return false
-	}
+func (msg RtmpMsg) IsHevcKeySeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader != 0 {
-		packetType := msg.Payload[0] & 0x0f
-		if msg.Payload[1] == 'h' && msg.Payload[2] == 'v' && msg.Payload[3] == 'c' && msg.Payload[4] == '1' && packetType == RtmpExPacketTypeSequenceStart {
-			return true
-		}
-	} else {
-		return msg.Payload[0] == RtmpHevcKeyFrame && msg.Payload[1] == RtmpHevcPacketTypeSeqHeader
-	}
+func (msg RtmpMsg) IsEnhanced() bool { _ = "STUB: not implemented"; return false }
 
-	return false
-}
+func (msg RtmpMsg) IsVideoKeySeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-func (msg RtmpMsg) IsEnhanced() bool {
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader != 0 {
-		return true
-	}
+func (msg RtmpMsg) IsAvcKeyNalu() bool { _ = "STUB: not implemented"; return false }
 
-	return false
-}
+func (msg RtmpMsg) IsHevcKeyNalu() bool { _ = "STUB: not implemented"; return false }
 
-func (msg RtmpMsg) IsVideoKeySeqHeader() bool {
-	return msg.IsAvcKeySeqHeader() || msg.IsHevcKeySeqHeader()
-}
+func (msg RtmpMsg) IsEnchanedHevcNalu() bool { _ = "STUB: not implemented"; return false }
 
-func (msg RtmpMsg) IsAvcKeyNalu() bool {
-	return msg.Header.MsgTypeId == RtmpTypeIdVideo && msg.Payload[0] == RtmpAvcKeyFrame && msg.Payload[1] == RtmpAvcPacketTypeNalu
-}
+func (msg RtmpMsg) GetEnchanedHevcNaluIndex() int { _ = "STUB: not implemented"; return 0 }
 
-func (msg RtmpMsg) IsHevcKeyNalu() bool {
-	if msg.Header.MsgTypeId != RtmpTypeIdVideo {
-		return false
-	}
+// NALU前面有3个字节CompositionTime
 
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader != 0 {
-		frameType := msg.Payload[0] >> 4 & 0x07
-		packetType := msg.Payload[0] & 0x0F
-		return frameType == RtmpExFrameTypeKeyFrame && packetType != RtmpExPacketTypeSequenceStart
-	}
+func (msg RtmpMsg) IsVideoKeyNalu() bool { _ = "STUB: not implemented"; return false }
 
-	return msg.Payload[0] == RtmpHevcKeyFrame && msg.Payload[1] == RtmpHevcPacketTypeNalu
-}
+func (msg RtmpMsg) IsAacSeqHeader() bool { _ = "STUB: not implemented"; return false }
 
-func (msg RtmpMsg) IsEnchanedHevcNalu() bool {
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader != 0 {
-		packetType := msg.Payload[0] & 0x0f
-		if packetType == RtmpExPacketTypeCodedFrames || packetType == RtmpExPacketTypeCodedFramesX {
-			return true
-		}
-	}
+func (msg RtmpMsg) VideoCodecId() uint8 { _ = "STUB: not implemented"; return 0 }
 
-	return false
-}
+func (msg RtmpMsg) AudioCodecId() uint8 { _ = "STUB: not implemented"; return 0 }
 
-func (msg RtmpMsg) GetEnchanedHevcNaluIndex() int {
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader != 0 {
-		packetType := msg.Payload[0] & 0x0f
-		switch packetType {
-		case RtmpExPacketTypeCodedFrames:
-			// NALU前面有3个字节CompositionTime
-			return 5 + 3
-		case RtmpExPacketTypeCodedFramesX:
-			return 5
-		}
-	}
+func (msg RtmpMsg) Clone() (ret RtmpMsg) { _ = "STUB: not implemented"; return *new(RtmpMsg) }
 
-	return 0
-}
-
-func (msg RtmpMsg) IsVideoKeyNalu() bool {
-	return msg.IsAvcKeyNalu() || msg.IsHevcKeyNalu()
-}
-
-func (msg RtmpMsg) IsAacSeqHeader() bool {
-	return msg.Header.MsgTypeId == RtmpTypeIdAudio && msg.AudioCodecId() == RtmpSoundFormatAac && msg.Payload[1] == RtmpAacPacketTypeSeqHeader
-}
-
-func (msg RtmpMsg) VideoCodecId() uint8 {
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader == 0 {
-		return msg.Payload[0] & 0xF
-	}
-
-	if msg.Payload[1] == 'h' && msg.Payload[2] == 'v' && msg.Payload[3] == 'c' && msg.Payload[4] == '1' {
-		return RtmpCodecIdHevc
-	}
-
-	return RtmpCodecIdAvc
-}
-
-func (msg RtmpMsg) AudioCodecId() uint8 {
-	return msg.Payload[0] >> 4
-}
-
-func (msg RtmpMsg) Clone() (ret RtmpMsg) {
-	ret.Header = msg.Header
-	ret.Payload = make([]byte, len(msg.Payload))
-	copy(ret.Payload, msg.Payload)
-	return
-}
-
-func (msg RtmpMsg) Dts() uint32 {
-	return msg.Header.TimestampAbs
-}
+func (msg RtmpMsg) Dts() uint32 { _ = "STUB: not implemented"; return 0 }
 
 // Pts
 //
 // 注意，只有视频才能调用该函数获取pts，音频的dts和pts都直接使用 RtmpMsg.Header.TimestampAbs
-func (msg RtmpMsg) Pts() uint32 {
-	return msg.Header.TimestampAbs + bele.BeUint24(msg.Payload[2:])
-}
+func (msg RtmpMsg) Pts() uint32 { _ = "STUB: not implemented"; return 0 }
 
-func (msg RtmpMsg) Cts() uint32 {
-	if msg.Header.MsgTypeId == RtmpTypeIdAudio {
-		return bele.BeUint24(msg.Payload[2:])
-	}
+func (msg RtmpMsg) Cts() uint32 { _ = "STUB: not implemented"; return 0 }
 
-	isExtHeader := msg.Payload[0] & 0x80
-	if isExtHeader != 0 {
-		packetType := msg.Payload[0] & 0x0F
-		switch packetType {
-		case RtmpExPacketTypeCodedFrames:
-			return bele.BeUint24(msg.Payload[5:])
-		case RtmpExPacketTypeCodedFramesX:
-			return 0
-		default:
-			Log.Warnf("RtmpMsg.Cts: packetType invalid, packetType=%d", packetType)
-			return 0
-		}
-	}
+func (msg RtmpMsg) DebugString() string { _ = "STUB: not implemented"; return "" }
 
-	return bele.BeUint24(msg.Payload[2:])
-}
-
-func (msg RtmpMsg) DebugString() string {
-	isExtHeader := msg.Payload[0] & 0x80
-	if msg.Header.MsgTypeId == RtmpTypeIdVideo && isExtHeader != 0 {
-		frameType := msg.Payload[0] >> 4 & 0x07
-		packetType := msg.Payload[0] & 0x0F // e.g. RtmpExPacketTypeSequenceStart
-		if isExtHeader != 0 {
-			return fmt.Sprintf("type=%d,len=%d,dts=%d, ext(%d, %d, %d), payload=%s",
-				msg.Header.MsgTypeId, msg.Header.MsgLen, msg.Header.TimestampAbs,
-				isExtHeader, frameType, packetType,
-				hex.Dump(nazabytes.Prefix(msg.Payload, 64)))
-		}
-	}
-
-	return fmt.Sprintf("type=%d,len=%d,dts=%d, payload=%s",
-		msg.Header.MsgTypeId, msg.Header.MsgLen, msg.Header.TimestampAbs, hex.Dump(nazabytes.Prefix(msg.Payload, 64)))
-}
+// e.g. RtmpExPacketTypeSequenceStart

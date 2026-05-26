@@ -9,10 +9,6 @@
 package hls
 
 import (
-	"fmt"
-	"path/filepath"
-	"strings"
-
 	"github.com/q191201771/lal/pkg/base"
 )
 
@@ -111,59 +107,39 @@ type DefaultPathStrategy struct {
 // /hls/test110/test110-1620540712084-.ts -> test110-1620540712084-.ts test110    ts       {rootOutPath/test110/test110-1620540712084-.ts
 // /hls/test110-1620540712084-.ts         -> test110-1620540712084-.ts test110    ts       {rootOutPath/test110/test110-1620540712084-.ts
 func (dps *DefaultPathStrategy) GetRequestInfo(urlCtx base.UrlContext, rootOutPath string) (ri RequestInfo) {
-	filename := urlCtx.LastItemOfPath
-	filetype := urlCtx.GetFileType()
-	fileNameWithoutType := urlCtx.GetFilenameWithoutType()
-
-	if filetype == "m3u8" {
-		if filename == playlistM3u8FileName || filename == recordM3u8FileName {
-			uriItems := strings.Split(urlCtx.Path, "/")
-			ri.StreamName = uriItems[len(uriItems)-2]
-			ri.FileNameWithPath = filepath.Join(rootOutPath, ri.StreamName, filename)
-		} else {
-			ri.StreamName = fileNameWithoutType
-			ri.FileNameWithPath = filepath.Join(rootOutPath, ri.StreamName, playlistM3u8FileName)
-		}
-	} else if filetype == "ts" {
-		ri.StreamName = dps.getStreamNameFromTsFileName(filename)
-		ri.FileNameWithPath = filepath.Join(rootOutPath, ri.StreamName, filename)
-	}
-
-	return
+	_ = "STUB: not implemented"
+	return *new(RequestInfo)
 }
 
 // GetMuxerOutPath <rootOutPath>/<streamName>
 func (*DefaultPathStrategy) GetMuxerOutPath(rootOutPath string, streamName string) string {
-	return filepath.Join(rootOutPath, streamName)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func (*DefaultPathStrategy) GetLiveM3u8FileName(outPath string, streamName string) string {
-	return filepath.Join(outPath, playlistM3u8FileName)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func (*DefaultPathStrategy) GetRecordM3u8FileName(outPath string, streamName string) string {
-	return filepath.Join(outPath, recordM3u8FileName)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func (*DefaultPathStrategy) GetTsFileNameWithPath(outPath string, fileName string) string {
-	return filepath.Join(outPath, fileName)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func (*DefaultPathStrategy) GetTsFileName(streamName string, index int, timestamp int) string {
-	return fmt.Sprintf("%s-%d-%d.ts", streamName, timestamp, index)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func (*DefaultPathStrategy) getStreamNameFromTsFileName(fileName string) string {
-	sum := 0
-	index := strings.LastIndexFunc(fileName, func(r rune) bool {
-		if r == '-' {
-			sum++
-		}
-		// GetTsFileName 格式固定为%s-%d-%d.ts streamName取%s部分
-		return sum == 2
-	})
-	if index == -1 {
-		return fileName
-	}
-	return fileName[:index]
+	_ = "STUB: not implemented"
+	return ""
 }
+
+// GetTsFileName 格式固定为%s-%d-%d.ts streamName取%s部分

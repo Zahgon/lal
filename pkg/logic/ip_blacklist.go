@@ -10,7 +10,6 @@ package logic
 
 import (
 	"sync"
-	"time"
 )
 
 type IpBlacklist struct {
@@ -18,41 +17,8 @@ type IpBlacklist struct {
 	ips map[string]int64 // TODO(chef): 优化性能 202405
 }
 
-func (l *IpBlacklist) Add(ip string, durationSec int) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+func (l *IpBlacklist) Add(ip string, durationSec int) { _ = "STUB: not implemented"; return }
 
-	if l.ips == nil {
-		l.ips = make(map[string]int64)
-	}
+func (l *IpBlacklist) Has(ip string) bool { _ = "STUB: not implemented"; return false }
 
-	until := time.Now().Unix() + int64(durationSec)
-	l.ips[ip] = until
-}
-
-func (l *IpBlacklist) Has(ip string) bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-
-	l.eraseStale()
-
-	_, ok := l.ips[ip]
-	return ok
-}
-
-func (l *IpBlacklist) eraseStale() {
-	now := time.Now().Unix()
-
-	stales := make(map[string]struct{})
-
-	for ip, until := range l.ips {
-		if until < now {
-			stales[ip] = struct{}{}
-		}
-	}
-
-	for ip := range stales {
-		Log.Debugf("erase ip from blacklist. ip=%s", ip)
-		delete(l.ips, ip)
-	}
-}
+func (l *IpBlacklist) eraseStale() { _ = "STUB: not implemented"; return }

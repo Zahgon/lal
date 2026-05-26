@@ -8,13 +8,6 @@
 
 package rtsp
 
-import (
-	"fmt"
-	"time"
-
-	"github.com/q191201771/lal/pkg/base"
-)
-
 // rfc2326 10.3 ANNOUNCE
 //var RequestAnnounceTmpl = "not impl"
 
@@ -74,54 +67,24 @@ var ResponseAuthorizedTmpl = "RTSP/1.0 401 Unauthorized\r\n" +
 	"WWW-Authenticate: %s\r\n" +
 	"\r\n"
 
-func PackResponseOptions(cseq string) string {
-	return fmt.Sprintf(base.LalRtspResponseOptionsTmpl, cseq)
-}
+func PackResponseOptions(cseq string) string { _ = "STUB: not implemented"; return "" }
 
-func PackResponseAnnounce(cseq string) string {
-	return fmt.Sprintf(ResponseAnnounceTmpl, cseq)
-}
+func PackResponseAnnounce(cseq string) string { _ = "STUB: not implemented"; return "" }
 
-func PackResponseDescribe(cseq, sdp string) string {
-	date := time.Now().Format(time.RFC1123)
-	return fmt.Sprintf(ResponseDescribeTmpl, cseq, date, len(sdp), sdp)
-}
+func PackResponseDescribe(cseq, sdp string) string { _ = "STUB: not implemented"; return "" }
 
-func PackResponseSetup(cseq string, htv string) string {
-	date := time.Now().Format(time.RFC1123)
+func PackResponseSetup(cseq string, htv string) string { _ = "STUB: not implemented"; return "" }
 
-	return fmt.Sprintf(ResponseSetupTmpl, cseq, date, sessionId, htv)
-}
+func PackResponseRecord(cseq string) string { _ = "STUB: not implemented"; return "" }
 
-func PackResponseRecord(cseq string) string {
-	return fmt.Sprintf(ResponseRecordTmpl, cseq, sessionId)
-}
+func PackResponsePlay(cseq string) string { _ = "STUB: not implemented"; return "" }
 
-func PackResponsePlay(cseq string) string {
-	date := time.Now().Format(time.RFC1123)
-	return fmt.Sprintf(ResponsePlayTmpl, cseq, date)
-}
+func PackResponseTeardown(cseq string) string { _ = "STUB: not implemented"; return "" }
 
-func PackResponseTeardown(cseq string) string {
-	return fmt.Sprintf(ResponseTeardownTmpl, cseq)
-}
-
-func PackResponseAuthorized(cseq, authenticate string) string {
-	date := time.Now().Format(time.RFC1123)
-	return fmt.Sprintf(ResponseAuthorizedTmpl, cseq, date, authenticate)
-}
+func PackResponseAuthorized(cseq, authenticate string) string { _ = "STUB: not implemented"; return "" }
 
 // PackRequest @param body 可以为空
 func PackRequest(method, uri string, headers map[string]string, body string) (ret string) {
-	ret = method + " " + uri + " RTSP/1.0\r\n"
-	for k, v := range headers {
-		ret += k + ": " + v + "\r\n"
-	}
-	ret += "\r\n"
-
-	if body != "" {
-		ret += body
-	}
-
-	return ret
+	_ = "STUB: not implemented"
+	return ""
 }

@@ -9,16 +9,8 @@
 package rtsp
 
 import (
-	"fmt"
-	"net"
-	"strconv"
-	"strings"
-
-	"github.com/q191201771/naza/pkg/nazaerrors"
-
 	"github.com/q191201771/lal/pkg/base"
 
-	"github.com/q191201771/lal/pkg/rtprtcp"
 	"github.com/q191201771/naza/pkg/nazanet"
 )
 
@@ -110,6 +102,7 @@ var availUdpConnPool *nazanet.AvailUdpConnPool
 
 // 传入远端IP，RtpPort，RtcpPort，创建两个对应的RTP和RTCP的UDP连接对象，以及对应的本端端口
 func initConnWithClientPort(rHost string, rRtpPort, rRtcpPort uint16) (rtpConn, rtcpConn *nazanet.UdpConnection, lRtpPort, lRtcpPort uint16, err error) {
+	_ = "STUB: not implemented"
 	// NOTICE
 	// 处理Pub时，
 	// 一路流的rtp端口和rtcp端口必须不同。
@@ -117,75 +110,34 @@ func initConnWithClientPort(rHost string, rRtpPort, rRtcpPort uint16) (rtpConn, 
 	// 又尝试给ffmpeg返回rtp:a和rtcp:a+2的端口，结果ffmpeg依然使用a和a+1端口。
 	// 也即是说，ffmpeg默认认为rtcp的端口是rtp的端口+1。而不管SETUP RESPONSE的rtcp端口是多少。
 	// 我目前在Acquire2这个函数里做了保证，绑定两个可用且连续的端口。
-
-	var rtpc, rtcpc *net.UDPConn
-	rtpc, lRtpPort, rtcpc, lRtcpPort, err = availUdpConnPool.Acquire2()
-	if err != nil {
-		return
-	}
-
-	rtpConn, err = nazanet.NewUdpConnection(func(option *nazanet.UdpConnectionOption) {
-		option.Conn = rtpc
-		option.RAddr = net.JoinHostPort(rHost, fmt.Sprintf("%d", rRtpPort))
-		option.MaxReadPacketSize = rtprtcp.MaxRtpRtcpPacketSize
-	})
-	if err != nil {
-		return
-	}
-	rtcpConn, err = nazanet.NewUdpConnection(func(option *nazanet.UdpConnectionOption) {
-		option.Conn = rtcpc
-		option.RAddr = net.JoinHostPort(rHost, fmt.Sprintf("%d", rRtcpPort))
-		option.MaxReadPacketSize = rtprtcp.MaxRtpRtcpPacketSize
-	})
-	return
+	return nil, nil, 0, 0, nil
 }
 
 // 从setup消息的header中解析rtp rtcp channel
 func parseRtpRtcpChannel(setupTransport string) (rtp, rtcp uint16, err error) {
-	return parseTransport(setupTransport, TransportFieldInterleaved)
+	_ = "STUB: not implemented"
+	return 0, 0, nil
 }
 
 // 从setup消息的header中解析rtp rtcp 端口
 func parseClientPort(setupTransport string) (rtp, rtcp uint16, err error) {
-	return parseTransport(setupTransport, TransportFieldClientPort)
+	_ = "STUB: not implemented"
+	return 0, 0, nil
 }
 
 func parseServerPort(setupTransport string) (rtp, rtcp uint16, err error) {
-	return parseTransport(setupTransport, TransportFieldServerPort)
+	_ = "STUB: not implemented"
+	return 0, 0, nil
 }
 
 func parseTransport(setupTransport string, key string) (first, second uint16, err error) {
-	var clientPort string
-	items := strings.Split(setupTransport, ";")
-	for _, item := range items {
-		if strings.HasPrefix(item, key) {
-			kv := strings.Split(item, "=")
-			if len(kv) != 2 {
-				continue
-			}
-			clientPort = kv[1]
-		}
-	}
-	items = strings.Split(clientPort, "-")
-	if len(items) != 2 {
-		return 0, 0, nazaerrors.Wrap(base.ErrRtsp)
-	}
-	iFirst, err := strconv.Atoi(items[0])
-	if err != nil {
-		return 0, 0, err
-	}
-	iSecond, err := strconv.Atoi(items[1])
-	if err != nil {
-		return 0, 0, err
-	}
-	return uint16(iFirst), uint16(iSecond), err
+	_ = "STUB: not implemented"
+	return 0, 0, nil
 }
 
 func makeSetupUri(urlCtx base.UrlContext, aControl string) string {
-	if strings.HasPrefix(aControl, "rtsp://") {
-		return aControl
-	}
-	return fmt.Sprintf("%s/%s", urlCtx.RawUrlWithoutUserInfo, aControl)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func init() {

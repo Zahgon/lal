@@ -8,28 +8,9 @@
 
 package httpflv
 
-import "io"
-
 func ReadAllTagsFromFlvFile(filename string) ([]Tag, error) {
-	var tags []Tag
-
-	var ffr FlvFileReader
-	defer ffr.Dispose()
-	err := ffr.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	for {
-		tag, err := ffr.ReadTag()
-		if err != nil {
-			if err == io.EOF {
-				return tags, nil
-			} else {
-				return tags, err
-			}
-		}
-		tags = append(tags, tag)
-	}
-	// never reach here
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// never reach here

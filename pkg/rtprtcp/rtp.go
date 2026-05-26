@@ -46,45 +46,11 @@ const (
 //   - 0 a和b相等
 //   - 1 a大于b
 //   - -1 a小于b
-func CompareSeq(a, b uint16) int {
-	if a == b {
-		return 0
-	}
-	if a > b {
-		if a-b < 32768 {
-			return 1
-		}
+func CompareSeq(a, b uint16) int { _ = "STUB: not implemented"; return 0 }
 
-		return -1
-	}
-
-	// must be a < b
-	if b-a < 32768 {
-		return -1
-	}
-
-	return 1
-}
+// must be a < b
 
 // SubSeq a减b的值，内部处理序号翻转问题，如果a小于b，则返回负值，见单元测试中的例子
-func SubSeq(a, b uint16) int {
-	if a == b {
-		return 0
-	}
+func SubSeq(a, b uint16) int { _ = "STUB: not implemented"; return 0 }
 
-	if a > b {
-		d := a - b
-		if d < 16384 {
-			return int(d)
-		}
-		return int(d) - 65536
-	}
-
-	// must be a < b
-	d := b - a
-	if d < 16384 {
-		return -int(d)
-	}
-
-	return 65536 - int(d)
-}
+// must be a < b

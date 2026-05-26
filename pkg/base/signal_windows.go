@@ -12,5 +12,7 @@
 package base
 
 func RunSignalHandler(cb func()) {
+	_ = "STUB: not implemented"
 	// noop
+	return
 }

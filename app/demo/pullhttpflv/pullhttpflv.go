@@ -9,13 +9,11 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	"github.com/q191201771/lal/pkg/base"
 	"github.com/q191201771/lal/pkg/httpflv"
 	"github.com/q191201771/lal/pkg/rtmp"
-	"github.com/q191201771/naza/pkg/bele"
 	"github.com/q191201771/naza/pkg/nazalog"
 )
 
@@ -75,29 +73,16 @@ func main() {
 	nazalog.Assert(nil, err)
 }
 
-func parseFlag() (url, flvfile string) {
-	i := flag.String("i", "", "specify http-flv url")
-	o := flag.String("o", "", "specify output flv file")
-	flag.Parse()
-	if *i == "" || *o == "" {
-		flag.Usage()
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *i, *o
-}
+func parseFlag() (url, flvfile string) { _ = "STUB: not implemented"; return "", "" }
 
 func writeFlvHeader(b []byte, flags uint8) {
+	_ = "STUB: not implemented"
 
 	// 'FLV', version 1
-	bele.BePutUint32(b, 0x464c5601)
-	b[4] = flags
-
-	// DataOffset: UI32 Offset in bytes from start of file to start of body (that is, size of header)
-	// The DataOffset field usually has a value of 9 for FLV version 1.
-	bele.BePutUint32(b[5:9], 9)
-
-	// PreviousTagSize0: UI32 Always 0
-	bele.BePutUint32(b[9:13], 0)
-
 	return
 }
+
+// DataOffset: UI32 Offset in bytes from start of file to start of body (that is, size of header)
+// The DataOffset field usually has a value of 9 for FLV version 1.
+
+// PreviousTagSize0: UI32 Always 0

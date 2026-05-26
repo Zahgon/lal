@@ -19,27 +19,11 @@ var (
 	setOnce sync.Once
 )
 
-func SetUseMemoryAsDiskFlag(flag bool) {
-	setOnce.Do(func() {
-		var t filesystemlayer.FslType
-		if flag {
-			t = filesystemlayer.FslTypeMemory
-		} else {
-			t = filesystemlayer.FslTypeDisk
-		}
-		if fslCtx == nil || fslCtx.Type() != t {
-			fslCtx = filesystemlayer.FslFactory(t)
-		}
-	})
-}
+func SetUseMemoryAsDiskFlag(flag bool) { _ = "STUB: not implemented"; return }
 
-func ReadFile(filename string) ([]byte, error) {
-	return fslCtx.ReadFile(filename)
-}
+func ReadFile(filename string) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func RemoveAll(path string) error {
-	return fslCtx.RemoveAll(path)
-}
+func RemoveAll(path string) error { _ = "STUB: not implemented"; return nil }
 
 func init() {
 	fslCtx = filesystemlayer.FslFactory(filesystemlayer.FslTypeDisk)

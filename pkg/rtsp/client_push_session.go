@@ -14,7 +14,6 @@ import (
 	"github.com/q191201771/lal/pkg/base"
 	"github.com/q191201771/lal/pkg/rtprtcp"
 	"github.com/q191201771/lal/pkg/sdp"
-	"github.com/q191201771/naza/pkg/nazaerrors"
 	"github.com/q191201771/naza/pkg/nazanet"
 )
 
@@ -41,47 +40,27 @@ type PushSession struct {
 type ModPushSessionOption func(option *PushSessionOption)
 
 func NewPushSession(modOptions ...ModPushSessionOption) *PushSession {
-	option := defaultPushSessionOption
-	for _, fn := range modOptions {
-		fn(&option)
-	}
-
-	s := &PushSession{
-		waitChan: make(chan error, 1),
-	}
-	baseOutSession := NewBaseOutSession(base.SessionTypeRtspPush, s)
-	cmdSession := NewClientCommandSession(CcstPushSession, baseOutSession.UniqueKey(), s, func(opt *ClientCommandSessionOption) {
-		opt.DoTimeoutMs = option.PushTimeoutMs
-		opt.OverTcp = option.OverTcp
-	})
-	s.cmdSession = cmdSession
-	s.baseOutSession = baseOutSession
-	Log.Infof("[%s] lifecycle new rtsp PushSession. session=%p", baseOutSession.UniqueKey(), s)
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (session *PushSession) WithSdpLogicContext(sdpCtx sdp.LogicContext) *PushSession {
-	session.sdpCtx = &sdp.LogicContext{}
-	*session.sdpCtx = sdpCtx
-	return session
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Start 阻塞直到和对端完成推流前，握手部分的工作（也即收到RTSP Record response），或者发生错误
-func (session *PushSession) Start(rawUrl string) error {
-	if session.sdpCtx == nil {
-		Log.Errorf("[%s] sdp logic context not set.", session)
-		return base.ErrRtsp
-	}
-	return session.push(rawUrl)
-}
+func (session *PushSession) Start(rawUrl string) error { _ = "STUB: not implemented"; return nil }
 
 // Push deprecated. use WithSdpLogicContext and Start instead.
 func (session *PushSession) Push(rawUrl string, sdpCtx sdp.LogicContext) error {
-	return session.WithSdpLogicContext(sdpCtx).Start(rawUrl)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (session *PushSession) WriteRtpPacket(packet rtprtcp.RtpPacket) error {
-	return session.baseOutSession.WriteRtpPacket(packet)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -89,47 +68,33 @@ func (session *PushSession) WriteRtpPacket(packet rtprtcp.RtpPacket) error {
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Dispose 文档请参考： IClientSessionLifecycle interface
-func (session *PushSession) Dispose() error {
-	return session.dispose(nil)
-}
+func (session *PushSession) Dispose() error { _ = "STUB: not implemented"; return nil }
 
 // WaitChan 文档请参考： IClientSessionLifecycle interface
-func (session *PushSession) WaitChan() <-chan error {
-	return session.waitChan
-}
+func (session *PushSession) WaitChan() <-chan error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionUrlContext interface
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Url 文档请参考： interface ISessionUrlContext
-func (session *PushSession) Url() string {
-	return session.cmdSession.Url()
-}
+func (session *PushSession) Url() string { _ = "STUB: not implemented"; return "" }
 
 // AppName 文档请参考： interface ISessionUrlContext
-func (session *PushSession) AppName() string {
-	return session.cmdSession.AppName()
-}
+func (session *PushSession) AppName() string { _ = "STUB: not implemented"; return "" }
 
 // StreamName 文档请参考： interface ISessionUrlContext
-func (session *PushSession) StreamName() string {
-	return session.cmdSession.StreamName()
-}
+func (session *PushSession) StreamName() string { _ = "STUB: not implemented"; return "" }
 
 // RawQuery 文档请参考： interface ISessionUrlContext
-func (session *PushSession) RawQuery() string {
-	return session.cmdSession.RawQuery()
-}
+func (session *PushSession) RawQuery() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionUrlContext IObject
 // ---------------------------------------------------------------------------------------------------------------------
 
 // UniqueKey 文档请参考： interface IObject
-func (session *PushSession) UniqueKey() string {
-	return session.baseOutSession.UniqueKey()
-}
+func (session *PushSession) UniqueKey() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionStat IObject
@@ -137,19 +102,17 @@ func (session *PushSession) UniqueKey() string {
 
 // GetStat 文档请参考： interface ISessionStat
 func (session *PushSession) GetStat() base.StatSession {
-	stat := session.baseOutSession.GetStat()
-	stat.RemoteAddr = session.cmdSession.RemoteAddr()
-	return stat
+	_ = "STUB: not implemented"
+	return *new(base.StatSession)
 }
 
 // UpdateStat 文档请参考： interface ISessionStat
-func (session *PushSession) UpdateStat(intervalSec uint32) {
-	session.baseOutSession.UpdateStat(intervalSec)
-}
+func (session *PushSession) UpdateStat(intervalSec uint32) { _ = "STUB: not implemented"; return }
 
 // IsAlive 文档请参考： interface ISessionStat
 func (session *PushSession) IsAlive() (readAlive, writeAlive bool) {
-	return session.baseOutSession.IsAlive()
+	_ = "STUB: not implemented"
+	return false, false
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -158,32 +121,44 @@ func (session *PushSession) IsAlive() (readAlive, writeAlive bool) {
 
 // OnConnectResult callback by ClientCommandSession
 func (session *PushSession) OnConnectResult() {
+	_ = "STUB: not implemented"
 	// noop
+
+	// OnDescribeResponse callback by ClientCommandSession
+	return
 }
 
-// OnDescribeResponse callback by ClientCommandSession
 func (session *PushSession) OnDescribeResponse(sdpCtx sdp.LogicContext) {
+	_ = "STUB: not implemented"
 	// noop
+
+	// OnSetupWithConn callback by ClientCommandSession
+	return
 }
 
-// OnSetupWithConn callback by ClientCommandSession
 func (session *PushSession) OnSetupWithConn(uri string, rtpConn, rtcpConn *nazanet.UdpConnection) {
-	_ = session.baseOutSession.SetupWithConn(uri, rtpConn, rtcpConn)
+	_ = "STUB: not implemented"
+	return
 }
 
 // OnSetupWithChannel callback by ClientCommandSession
 func (session *PushSession) OnSetupWithChannel(uri string, rtpChannel, rtcpChannel int) {
-	_ = session.baseOutSession.SetupWithChannel(uri, rtpChannel, rtcpChannel)
+	_ = "STUB: not implemented"
+	return
 }
 
 // OnSetupResult callback by ClientCommandSession
 func (session *PushSession) OnSetupResult() {
+	_ = "STUB: not implemented"
 	// noop
+
+	// OnInterleavedPacket callback by ClientCommandSession
+	return
 }
 
-// OnInterleavedPacket callback by ClientCommandSession
 func (session *PushSession) OnInterleavedPacket(packet []byte, channel int) {
-	session.baseOutSession.HandleInterleavedPacket(packet, channel)
+	_ = "STUB: not implemented"
+	return
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -192,70 +167,20 @@ func (session *PushSession) OnInterleavedPacket(packet []byte, channel int) {
 
 // WriteInterleavedPacket callback by BaseOutSession
 func (session *PushSession) WriteInterleavedPacket(packet []byte, channel int) error {
-	return session.cmdSession.WriteInterleavedPacket(packet, channel)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *PushSession) push(rawUrl string) error {
-	Log.Debugf("[%s] push. url=%s", session.UniqueKey(), rawUrl)
-	session.cmdSession.InitWithSdp(*session.sdpCtx)
-	session.baseOutSession.InitWithSdp(*session.sdpCtx)
-	if err := session.cmdSession.Start(rawUrl); err != nil {
-		_ = session.dispose(err)
-		return err
-	}
+func (session *PushSession) push(rawUrl string) error { _ = "STUB: not implemented"; return nil }
 
-	go func() {
-		var cmdSessionDisposed, baseInSessionDisposed bool
-		var retErr error
-		var retErrFlag bool
-	LOOP:
-		for {
-			var err error
-			select {
-			case err = <-session.cmdSession.WaitChan():
-				if err != nil {
-					_ = session.baseOutSession.Dispose()
-				}
-				if cmdSessionDisposed {
-					Log.Errorf("[%s] cmd session disposed already.", session.UniqueKey())
-				}
-				cmdSessionDisposed = true
-			case err = <-session.baseOutSession.WaitChan():
-				// err是nil时，表示是被PullSession::Dispose主动销毁，那么cmdSession也会被销毁，就不需要我们再调用cmdSession.Dispose了
-				if err != nil {
-					_ = session.cmdSession.Dispose()
-				}
-				if baseInSessionDisposed {
-					Log.Errorf("[%s] base in session disposed already.", session.UniqueKey())
-				}
-				baseInSessionDisposed = true
-			} // select loop
+// err是nil时，表示是被PullSession::Dispose主动销毁，那么cmdSession也会被销毁，就不需要我们再调用cmdSession.Dispose了
 
-			// 第一个错误作为返回值
-			if !retErrFlag {
-				retErr = err
-				retErrFlag = true
-			}
-			if cmdSessionDisposed && baseInSessionDisposed {
-				break LOOP
-			}
-		} // for loop
+// select loop
 
-		session.waitChan <- retErr
-	}()
+// 第一个错误作为返回值
 
-	return nil
-}
+// for loop
 
-func (session *PushSession) dispose(err error) error {
-	var retErr error
-	session.disposeOnce.Do(func() {
-		Log.Infof("[%s] lifecycle dispose rtsp PushSession. session=%p", session.UniqueKey(), session)
-		e1 := session.cmdSession.Dispose()
-		e2 := session.baseOutSession.Dispose()
-		retErr = nazaerrors.CombineErrors(e1, e2)
-	})
-	return retErr
-}
+func (session *PushSession) dispose(err error) error { _ = "STUB: not implemented"; return nil }

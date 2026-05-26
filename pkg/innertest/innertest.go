@@ -9,41 +9,16 @@
 package innertest
 
 import (
-	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"runtime"
-	"strings"
-	"sync"
 	"testing"
-	"time"
-
-	"github.com/q191201771/naza/pkg/nazabytes"
-	"github.com/q191201771/naza/pkg/nazalog"
-
-	"github.com/q191201771/lal/pkg/httpts"
-	"github.com/q191201771/naza/pkg/filebatch"
-
-	"github.com/q191201771/lal/pkg/hls"
-	"github.com/q191201771/naza/pkg/mock"
-
-	"github.com/q191201771/naza/pkg/nazahttp"
 
 	"github.com/q191201771/lal/pkg/rtprtcp"
 	"github.com/q191201771/lal/pkg/rtsp"
 	"github.com/q191201771/lal/pkg/sdp"
 
-	"github.com/q191201771/lal/pkg/remux"
-
 	"github.com/q191201771/lal/pkg/base"
 
-	"github.com/q191201771/naza/pkg/nazamd5"
-
 	"github.com/q191201771/lal/pkg/httpflv"
-	"github.com/q191201771/lal/pkg/logic"
 	"github.com/q191201771/lal/pkg/rtmp"
-	"github.com/q191201771/naza/pkg/assert"
 	"github.com/q191201771/naza/pkg/nazaatomic"
 )
 
@@ -96,351 +71,58 @@ var (
 type RtspPullObserver struct {
 }
 
-func (r RtspPullObserver) OnSdp(sdpCtx sdp.LogicContext) {
-	rtspSdpCtx = sdpCtx
-}
+func (r RtspPullObserver) OnSdp(sdpCtx sdp.LogicContext) { _ = "STUB: not implemented"; return }
 
-func (r RtspPullObserver) OnRtpPacket(pkt rtprtcp.RtpPacket) {
-}
+func (r RtspPullObserver) OnRtpPacket(pkt rtprtcp.RtpPacket) { _ = "STUB: not implemented"; return }
 
-func (r RtspPullObserver) OnAvPacket(pkt base.AvPacket) {
-	rtspPullAvPacketCount.Increment()
-}
+func (r RtspPullObserver) OnAvPacket(pkt base.AvPacket) { _ = "STUB: not implemented"; return }
 
 func Entry(tt *testing.T) {
+	_ = "STUB: not implemented"
 	// 在MacOS只测试一次
 	// 其他环境（比如github CI）上则每个package都执行，因为要生产测试覆盖率
-	if runtime.GOOS == "darwin" {
-		_, file, _, _ := runtime.Caller(1)
-		if !strings.HasSuffix(file, "innertest_test.go") {
-			return
-		}
-	}
-
-	t = tt
-
-	mode = 0
-	entry()
-
-	mode = 1
-	entry()
-
-	mode = 2
-	entry()
+	return
 }
 
-func entry() {
-	var entryWaitGroup sync.WaitGroup // 用于等待所有协程结束
-	entryWaitGroup.Add(4)
+func entry() { _ = "STUB: not implemented"; return }
 
-	Log.Debugf("> innertest")
+// 用于等待所有协程结束
 
-	if _, err := os.Lstat(confFilename); err != nil {
-		Log.Warnf("lstat %s error. err=%+v", confFilename, err)
-		return
-	}
-	if _, err := os.Lstat(rFlvFileName); err != nil {
-		Log.Warnf("lstat %s error. err=%+v", rFlvFileName, err)
-		return
-	}
+// TODO(chef): [test] rtsp sub没有验证收到的数据，因为即使是先sub，它还有一个数据到来后，才能完成信令交互的逻辑 202206
+// TODO(chef): [perf] [2021.12.25] rtmp推rtsp拉的性能。开启rtsp pull后，rtmp pull的总时长增加了
 
-	httpflvPullTagCount.Store(0)
-	rtmpPullTagCount.Store(0)
-	httptsSize.Store(0)
-	rtspPullAvPacketCount.Store(0)
-	hls.Clock = mock.NewFakeClock()
-	hls.Clock.Set(time.Date(2022, 1, 16, 23, 24, 25, 0, time.UTC))
-	httpts.SubSessionWriteChanSize = 0
+//option.WriteChanSize = 1024
 
-	var err error
+//Log.Debugf("rtmp push: %d", fileTagCount.Load())
 
-	sm := logic.NewServerManager(func(option *logic.Option) {
-		option.ConfFilename = confFilename
-	})
-	config := sm.Config()
+// 注意，先释放push，触发pub释放，从而刷新hls的结束时切片逻辑
 
-	_ = os.RemoveAll(config.HlsConfig.OutPath)
+// 由于windows没有信号，会导致编译错误，所以直接调用Dispose
+//_ = syscall.Kill(syscall.Getpid(), syscall.SIGUSR1)
 
-	go sm.RunLoop()
-	time.Sleep(100 * time.Millisecond)
+func compareFile() { _ = "STUB: not implemented"; return }
 
-	getAllHttpApi(config.HttpApiConfig.Addr)
+// 检查httpflv
 
-	pushUrl = fmt.Sprintf("rtmp://127.0.0.1%s/live/innertest", config.RtmpConfig.Addr)
-	httpflvPullUrl = fmt.Sprintf("http://127.0.0.1%s/live/innertest.flv", config.HttpflvConfig.HttpListenAddr)
-	httptsPullUrl = fmt.Sprintf("http://127.0.0.1%s/live/innertest.ts", config.HttpflvConfig.HttpListenAddr)
-	rtmpPullUrl = fmt.Sprintf("rtmp://127.0.0.1%s/live/innertest", config.RtmpConfig.Addr)
-	rtspPullUrl = fmt.Sprintf("rtsp://127.0.0.1%s/live/innertest", config.RtspConfig.Addr)
+// 检查rtmp
 
-	wRtmpPullFileName = "../../testdata/rtmppull.flv"
-	wFlvPullFileName = "../../testdata/flvpull.flv"
-	wTsPullFileName = fmt.Sprintf("../../testdata/tspull_%d.ts", mode)
-	wPlaylistM3u8FileName = fmt.Sprintf("%sinnertest/playlist.m3u8", config.HlsConfig.OutPath)
-	wRecordM3u8FileName = fmt.Sprintf("%sinnertest/record.m3u8", config.HlsConfig.OutPath)
-	wHlsTsFilePath = fmt.Sprintf("%sinnertest/", config.HlsConfig.OutPath)
+// 检查hls的m3u8文件
 
-	var tags []httpflv.Tag
-	originTags, err := httpflv.ReadAllTagsFromFlvFile(rFlvFileName)
-	assert.Equal(t, nil, err)
-	if mode == 0 {
-		tags = originTags
-	} else if mode == 1 {
-		for _, tag := range originTags {
-			if tag.Header.Type == base.RtmpTypeIdMetadata || tag.Header.Type == base.RtmpTypeIdAudio {
-				tags = append(tags, tag)
-			}
-		}
-	} else if mode == 2 {
-		for _, tag := range originTags {
-			if tag.Header.Type == base.RtmpTypeIdMetadata || tag.Header.Type == base.RtmpTypeIdVideo {
-				tags = append(tags, tag)
-			}
-		}
-	}
-	fileTagCount = len(tags)
+// 检查hls的ts文件
 
-	err = httpFlvWriter.Open(wFlvPullFileName)
-	assert.Equal(t, nil, err)
-	err = httpFlvWriter.WriteRaw(httpflv.FlvHeader)
-	assert.Equal(t, nil, err)
+func getAllHttpApi(addr string) { _ = "STUB: not implemented"; return }
 
-	err = rtmpWriter.Open(wRtmpPullFileName)
-	assert.Equal(t, nil, err)
-	err = rtmpWriter.WriteRaw(httpflv.FlvHeader)
-	assert.Equal(t, nil, err)
-
-	go func() {
-		rtmpPullSession = rtmp.NewPullSession(func(option *rtmp.PullSessionOption) {
-			option.ReadAvTimeoutMs = 10000
-			option.ReadBufSize = 0
-			option.ReuseReadMessageBufferFlag = false
-		}).WithOnReadRtmpAvMsg(func(msg base.RtmpMsg) {
-			tag := remux.RtmpMsg2FlvTag(msg)
-			err := rtmpWriter.WriteTag(*tag)
-			assert.Equal(t, nil, err)
-			rtmpPullTagCount.Increment()
-		})
-		err := rtmpPullSession.Start(rtmpPullUrl)
-		Log.Assert(nil, err)
-		err = <-rtmpPullSession.WaitChan()
-		Log.Debug(err)
-
-		entryWaitGroup.Done()
-	}()
-
-	go func() {
-		var flvErr error
-		httpflvPullSession = httpflv.NewPullSession(func(option *httpflv.PullSessionOption) {
-			option.ReadTimeoutMs = 10000
-		}).WithOnReadFlvTag(func(tag httpflv.Tag) {
-			errWrite := httpFlvWriter.WriteTag(tag)
-			assert.Equal(t, nil, errWrite)
-			httpflvPullTagCount.Increment()
-		})
-		errStart := httpflvPullSession.Start(httpflvPullUrl)
-		Log.Assert(nil, errStart)
-		flvErr = <-httpflvPullSession.WaitChan()
-		Log.Debug(flvErr)
-
-		entryWaitGroup.Done()
-	}()
-
-	go func() {
-		b, _ := getHttpts()
-		_ = os.WriteFile(wTsPullFileName, b, 0666)
-		assert.Equal(t, goldenHttptsLenList[mode], len(b))
-		assert.Equal(t, goldenHttptsMd5List[mode], nazamd5.Md5(b))
-
-		entryWaitGroup.Done()
-	}()
-	time.Sleep(100 * time.Millisecond)
-
-	// TODO(chef): [test] rtsp sub没有验证收到的数据，因为即使是先sub，它还有一个数据到来后，才能完成信令交互的逻辑 202206
-	// TODO(chef): [perf] [2021.12.25] rtmp推rtsp拉的性能。开启rtsp pull后，rtmp pull的总时长增加了
-	go func() {
-		var rtspPullObserver RtspPullObserver
-		rtspPullSession = rtsp.NewPullSession(&rtspPullObserver, func(option *rtsp.PullSessionOption) {
-			option.PullTimeoutMs = 10000
-		})
-		err := rtspPullSession.Start(rtspPullUrl)
-		assert.Equal(t, nil, err)
-		entryWaitGroup.Done()
-	}()
-
-	time.Sleep(100 * time.Millisecond)
-
-	pushSession = rtmp.NewPushSession(func(option *rtmp.PushSessionOption) {
-		option.WriteBufSize = 4096
-		//option.WriteChanSize = 1024
-	})
-	err = pushSession.Start(pushUrl)
-	assert.Equal(t, nil, err)
-
-	for _, tag := range tags {
-		assert.Equal(t, nil, err)
-		chunks := remux.FlvTag2RtmpChunks(tag)
-		//Log.Debugf("rtmp push: %d", fileTagCount.Load())
-		err := pushSession.Write(chunks)
-		assert.Equal(t, nil, err)
-	}
-	err = pushSession.Flush()
-	assert.Equal(t, nil, err)
-
-	getAllHttpApi(config.HttpApiConfig.Addr)
-
-	// 注意，先释放push，触发pub释放，从而刷新hls的结束时切片逻辑
-	pushSession.Dispose()
-
-	for {
-		if httpflvPullTagCount.Load() == uint32(fileTagCount) &&
-			rtmpPullTagCount.Load() == uint32(fileTagCount) &&
-			httptsSize.Load() == uint32(goldenHttptsLenList[mode]) {
-			break
-		}
-		nazalog.Debugf("%d(%d, %d) %d(%d)",
-			fileTagCount, httpflvPullTagCount.Load(), rtmpPullTagCount.Load(),
-			goldenHttptsLenList[mode], httptsSize.Load())
-		time.Sleep(100 * time.Millisecond)
-	}
-
-	Log.Debug("[innertest] start dispose.")
-
-	httpflvPullSession.Dispose()
-	rtmpPullSession.Dispose()
-	rtspPullSession.Dispose()
-
-	httpFlvWriter.Dispose()
-	rtmpWriter.Dispose()
-
-	// 由于windows没有信号，会导致编译错误，所以直接调用Dispose
-	//_ = syscall.Kill(syscall.Getpid(), syscall.SIGUSR1)
-	sm.Dispose()
-
-	entryWaitGroup.Wait()
-
-	Log.Debugf("tag count. in=%d, out httpflv=%d, out rtmp=%d, out rtsp=%d",
-		fileTagCount, httpflvPullTagCount.Load(), rtmpPullTagCount.Load(), rtspPullAvPacketCount.Load())
-
-	compareFile()
-	goldenRtspSdpTmplList[mode] = strings.ReplaceAll(goldenRtspSdpTmplList[mode], "{atoolv}", base.LalPackSdp)
-	assert.Equal(t, strings.ReplaceAll(goldenRtspSdpTmplList[mode], "\n", "\r\n"), string(rtspSdpCtx.RawSdp))
-}
-
-func compareFile() {
-	r, err := os.ReadFile(rFlvFileName)
-	assert.Equal(t, nil, err)
-	Log.Debugf("%s filesize:%d", rFlvFileName, len(r))
-
-	// 检查httpflv
-	w, err := os.ReadFile(wFlvPullFileName)
-	assert.Equal(t, nil, err)
-	assert.Equal(t, goldenHttpflvLenList[mode], len(w))
-	assert.Equal(t, goldenHttpflvMd5List[mode], nazamd5.Md5(w))
-
-	// 检查rtmp
-	w, err = os.ReadFile(wRtmpPullFileName)
-	assert.Equal(t, nil, err)
-	assert.Equal(t, goldenRtmpLenList[mode], len(w))
-	assert.Equal(t, goldenRtmpMd5List[mode], nazamd5.Md5(w))
-
-	// 检查hls的m3u8文件
-	playListM3u8, err := os.ReadFile(wPlaylistM3u8FileName)
-	assert.Equal(t, nil, err)
-	assert.Equal(t, goldenPlaylistM3u8List[mode], string(playListM3u8))
-	recordM3u8, err := os.ReadFile(wRecordM3u8FileName)
-	assert.Equal(t, nil, err)
-	assert.Equal(t, goldenRecordM3u8List[mode], string(recordM3u8))
-
-	// 检查hls的ts文件
-	var allContent []byte
-	var fileNum int
-	err = filebatch.Walk(
-		wHlsTsFilePath,
-		false,
-		".ts",
-		func(path string, info os.FileInfo, content []byte, err error) []byte {
-			allContent = append(allContent, content...)
-			fileNum++
-			return nil
-		})
-	assert.Equal(t, nil, err)
-	allContentMd5 := nazamd5.Md5(allContent)
-	assert.Equal(t, goldenHlsTsNumList[mode], fileNum)
-	assert.Equal(t, goldenHlsTsLenList[mode], len(allContent))
-	assert.Equal(t, goldenHlsTsMd5List[mode], allContentMd5)
-}
-
-func getAllHttpApi(addr string) {
-	var b []byte
-	var err error
-
-	b, err = httpGet(fmt.Sprintf("http://%s/api/stat/lal_info", addr))
-	Log.Assert(nil, err)
-	Log.Debugf("%s", string(b))
-
-	b, err = httpGet(fmt.Sprintf("http://%s/api/stat/group?stream_name=innertest", addr))
-	Log.Assert(nil, err)
-	Log.Debugf("%s", string(b))
-
-	b, err = httpGet(fmt.Sprintf("http://%s/api/stat/all_group", addr))
-	Log.Assert(nil, err)
-	Log.Debugf("%s", string(b))
-
-	var acspr base.ApiCtrlStartRelayPullReq
-	b, err = httpPost(fmt.Sprintf("http://%s/api/ctrl/start_relay_pull", addr), &acspr)
-	Log.Assert(nil, err)
-	Log.Debugf("%s", string(b))
-
-	var ackos base.ApiCtrlKickSessionReq
-	b, err = httpPost(fmt.Sprintf("http://%s/api/ctrl/kick_session", addr), &ackos)
-	Log.Assert(nil, err)
-	Log.Debugf("%s", string(b))
-}
-
-func getHttpts() ([]byte, error) {
-	resp, err := http.DefaultClient.Get(httptsPullUrl)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var buf nazabytes.Buffer
-	buf.ReserveBytes(goldenHttptsLenList[mode])
-	for {
-		n, err := resp.Body.Read(buf.WritableBytes())
-		if n > 0 {
-			buf.Flush(n)
-			httptsSize.Add(uint32(n))
-		}
-		if err != nil {
-			return buf.Bytes(), err
-		}
-		if buf.Len() == goldenHttptsLenList[mode] {
-			return buf.Bytes(), nil
-		}
-	}
-}
+func getHttpts() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 // TODO(chef): refactor 移入naza中
 
-func httpGet(url string) ([]byte, error) {
-	resp, err := http.DefaultClient.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	return io.ReadAll(resp.Body)
-}
+func httpGet(url string) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func httpPost(url string, info interface{}) ([]byte, error) {
-	resp, err := nazahttp.PostJson(url, info, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	return io.ReadAll(resp.Body)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

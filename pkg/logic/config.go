@@ -9,15 +9,8 @@
 package logic
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"strings"
-
-	"github.com/q191201771/lal/pkg/base"
 	"github.com/q191201771/lal/pkg/hls"
 	"github.com/q191201771/lal/pkg/rtsp"
-	"github.com/q191201771/naza/pkg/nazajson"
 	"github.com/q191201771/naza/pkg/nazalog"
 )
 
@@ -183,204 +176,53 @@ type CommonHttpAddrConfig struct {
 }
 
 func LoadConfAndInitLog(rawContent []byte) *Config {
-	var config *Config
+	_ = "STUB: not implemented"
 
 	// 读取配置并解析原始内容
-	if err := json.Unmarshal(rawContent, &config); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "unmarshal conf file failed. raw content=%s err=%+v", rawContent, err)
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-
-	j, err := nazajson.New(rawContent)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "nazajson unmarshal conf file failed. raw content=%s err=%+v", rawContent, err)
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-
-	// 初始化日志模块，注意，这一步尽量提前，使得后续的日志内容按我们的日志配置输出
-	//
-	// 日志配置项不存在时，设置默认值
-	//
-	// 注意，由于此时日志模块还没有初始化，所以有日志需要打印时，我们采用先缓存后打印（日志模块初始化成功后再打印）的方式
-	var cacheLog []string
-	if !j.Exist("log.level") {
-		config.LogConfig.Level = nazalog.LevelDebug
-		cacheLog = append(cacheLog, fmt.Sprintf("log.level=%s", config.LogConfig.Level.ReadableString()))
-	}
-	if !j.Exist("log.filename") {
-		config.LogConfig.Filename = "./logs/lalserver.log"
-		cacheLog = append(cacheLog, fmt.Sprintf("log.filename=%s", config.LogConfig.Filename))
-	}
-	if !j.Exist("log.is_to_stdout") {
-		config.LogConfig.IsToStdout = true
-		cacheLog = append(cacheLog, fmt.Sprintf("log.is_to_stdout=%v", config.LogConfig.IsToStdout))
-	}
-	if !j.Exist("log.is_rotate_daily") {
-		config.LogConfig.IsRotateDaily = true
-		cacheLog = append(cacheLog, fmt.Sprintf("log.is_rotate_daily=%v", config.LogConfig.IsRotateDaily))
-	}
-	if !j.Exist("log.short_file_flag") {
-		config.LogConfig.ShortFileFlag = true
-		cacheLog = append(cacheLog, fmt.Sprintf("log.short_file_flag=%v", config.LogConfig.ShortFileFlag))
-	}
-	if !j.Exist("log.timestamp_flag") {
-		config.LogConfig.TimestampFlag = true
-		cacheLog = append(cacheLog, fmt.Sprintf("log.timestamp_flag=%v", config.LogConfig.TimestampFlag))
-	}
-	if !j.Exist("log.timestamp_with_ms_flag") {
-		config.LogConfig.TimestampWithMsFlag = true
-		cacheLog = append(cacheLog, fmt.Sprintf("log.timestamp_with_ms_flag=%v", config.LogConfig.TimestampWithMsFlag))
-	}
-	if !j.Exist("log.level_flag") {
-		config.LogConfig.LevelFlag = true
-		cacheLog = append(cacheLog, fmt.Sprintf("log.level_flag=%v", config.LogConfig.LevelFlag))
-	}
-	if !j.Exist("log.assert_behavior") {
-		config.LogConfig.AssertBehavior = nazalog.AssertError
-		cacheLog = append(cacheLog, fmt.Sprintf("log.assert_behavior=%s", config.LogConfig.AssertBehavior.ReadableString()))
-	}
-
-	if err := Log.Init(func(option *nazalog.Option) {
-		*option = config.LogConfig
-	}); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "initial log failed. err=%+v\n", err)
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	Log.Info("initial log succ.")
-
-	// 打印Logo
-	Log.Info(base.LalLogo)
-
-	// 检查配置版本号是否匹配
-	if config.ConfVersion != base.ConfVersion {
-		Log.Warnf("config version invalid. conf version of lalserver=%s, conf version of config file=%s",
-			base.ConfVersion, config.ConfVersion)
-	}
-
-	// 做个全量字段检查，缺失的字段，Go中会先设置为零值
-	notExistFields, err := nazajson.CollectNotExistFields(rawContent, config,
-		"log.",
-		"default_http.http_listen_addr", "default_http.https_listen_addr", "default_http.https_cert_file", "default_http.https_key_file",
-		"httpflv.http_listen_addr", "httpflv.https_listen_addr", "httpflv.https_cert_file", "httpflv.https_key_file",
-		"hls.http_listen_addr", "hls.https_listen_addr", "hls.https_cert_file", "hls.https_key_file",
-		"httpts.http_listen_addr", "httpts.https_listen_addr", "httpts.https_cert_file", "httpts.https_key_file",
-	)
-	if err != nil {
-		Log.Warnf("config nazajson collect not exist fields failed. err=%+v", err)
-	}
-	if len(notExistFields) != 0 {
-		Log.Warnf("config some fields do not exist which have been set to the zero value. fields=%+v", notExistFields)
-	}
-
-	// 日志字段检查，缺失的字段，打印前面设置的默认值
-	if len(cacheLog) > 0 {
-		Log.Warnf("config some log fields do not exist which have been set to default value. %s", strings.Join(cacheLog, ", "))
-	}
-
-	// 如果具体的HTTP应用没有设置HTTP监听相关的配置，则尝试使用全局配置
-	mergeCommonHttpAddrConfig(&config.HttpflvConfig.CommonHttpAddrConfig, &config.DefaultHttpConfig.CommonHttpAddrConfig)
-	mergeCommonHttpAddrConfig(&config.HttptsConfig.CommonHttpAddrConfig, &config.DefaultHttpConfig.CommonHttpAddrConfig)
-	mergeCommonHttpAddrConfig(&config.HlsConfig.CommonHttpAddrConfig, &config.DefaultHttpConfig.CommonHttpAddrConfig)
-
-	// 为缺失的字段中的一些特定字段，设置特定默认值
-	if config.HlsConfig.Enable && !j.Exist("hls.cleanup_mode") {
-		Log.Warnf("config hls.cleanup_mode not exist. set to default which is %d", defaultHlsCleanupMode)
-		config.HlsConfig.CleanupMode = defaultHlsCleanupMode
-	}
-	if config.HlsConfig.Enable && !j.Exist("hls.delete_threshold") {
-		Log.Warnf("config hls.delete_threshold not exist. set to default same as hls.fragment_num which is %d",
-			config.HlsConfig.FragmentNum)
-		config.HlsConfig.DeleteThreshold = config.HlsConfig.FragmentNum
-	}
-	if config.HlsConfig.SubSessionHashKey != "" && config.HlsConfig.SubSessionTimeoutMs == 0 {
-		// 没有设置超时值，或者超时为0时
-		Log.Warnf("config hls.sub_session_timeout_ms is 0. set to %d(which is fragment_num * fragment_duration_ms * 2)",
-			config.HlsConfig.FragmentNum*config.HlsConfig.FragmentDurationMs*2)
-		config.HlsConfig.SubSessionTimeoutMs = config.HlsConfig.FragmentNum * config.HlsConfig.FragmentDurationMs * 2
-	}
-	if (config.HttpflvConfig.Enable || config.HttpflvConfig.EnableHttps) && !j.Exist("httpflv.url_pattern") {
-		Log.Warnf("config httpflv.url_pattern not exist. set to default which is %s", defaultHttpflvUrlPattern)
-		config.HttpflvConfig.UrlPattern = defaultHttpflvUrlPattern
-	}
-	if (config.HttptsConfig.Enable || config.HttptsConfig.EnableHttps) && !j.Exist("httpts.url_pattern") {
-		Log.Warnf("config httpts.url_pattern not exist. set to default which is %s", defaultHttptsUrlPattern)
-		config.HttptsConfig.UrlPattern = defaultHttptsUrlPattern
-	}
-	if (config.HlsConfig.Enable || config.HlsConfig.EnableHttps) && !j.Exist("hls.url_pattern") {
-		Log.Warnf("config hls.url_pattern not exist. set to default which is %s", defaultHlsUrlPattern)
-		config.HttpflvConfig.UrlPattern = defaultHlsUrlPattern
-	}
-
-	// 对一些常见的格式错误做修复
-	// 确保url pattern以`/`开始，并以`/`结束
-	if urlPattern, changed := ensureStartAndEndWithSlash(config.HttpflvConfig.UrlPattern); changed {
-		Log.Warnf("fix config. httpflv.url_pattern %s -> %s", config.HttpflvConfig.UrlPattern, urlPattern)
-		config.HttpflvConfig.UrlPattern = urlPattern
-	}
-	if urlPattern, changed := ensureStartAndEndWithSlash(config.HttptsConfig.UrlPattern); changed {
-		Log.Warnf("fix config. httpts.url_pattern %s -> %s", config.HttptsConfig.UrlPattern, urlPattern)
-		config.HttpflvConfig.UrlPattern = urlPattern
-	}
-	if urlPattern, changed := ensureStartAndEndWithSlash(config.HlsConfig.UrlPattern); changed {
-		Log.Warnf("fix config. hls.url_pattern %s -> %s", config.HlsConfig.UrlPattern, urlPattern)
-		config.HttpflvConfig.UrlPattern = urlPattern
-	}
-
-	// 打印配置文件中的元素内容，以及解析后的最终值
-	// 把配置文件原始内容中的换行去掉，使得打印日志时紧凑一些
-	lines := strings.Split(string(rawContent), "\n")
-	if len(lines) == 1 {
-		lines = strings.Split(string(rawContent), "\r\n")
-	}
-	var tlines []string
-	for _, l := range lines {
-		tlines = append(tlines, strings.TrimSpace(l))
-	}
-	compactRawContent := strings.Join(tlines, " ")
-	Log.Infof("load conf succ. raw content=%s parsed=%+v", compactRawContent, config)
-
-	return config
+	return nil
 }
+
+// 初始化日志模块，注意，这一步尽量提前，使得后续的日志内容按我们的日志配置输出
+//
+// 日志配置项不存在时，设置默认值
+//
+// 注意，由于此时日志模块还没有初始化，所以有日志需要打印时，我们采用先缓存后打印（日志模块初始化成功后再打印）的方式
+
+// 打印Logo
+
+// 检查配置版本号是否匹配
+
+// 做个全量字段检查，缺失的字段，Go中会先设置为零值
+
+// 日志字段检查，缺失的字段，打印前面设置的默认值
+
+// 如果具体的HTTP应用没有设置HTTP监听相关的配置，则尝试使用全局配置
+
+// 为缺失的字段中的一些特定字段，设置特定默认值
+
+// 没有设置超时值，或者超时为0时
+
+// 对一些常见的格式错误做修复
+// 确保url pattern以`/`开始，并以`/`结束
+
+// 打印配置文件中的元素内容，以及解析后的最终值
+// 把配置文件原始内容中的换行去掉，使得打印日志时紧凑一些
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func mergeCommonHttpAddrConfig(dst, src *CommonHttpAddrConfig) {
-	if dst.HttpListenAddr == "" && src.HttpListenAddr != "" {
-		dst.HttpListenAddr = src.HttpListenAddr
-	}
-	if dst.HttpsListenAddr == "" && src.HttpsListenAddr != "" {
-		dst.HttpsListenAddr = src.HttpsListenAddr
-	}
-	if dst.HttpsCertFile == "" && src.HttpsCertFile != "" {
-		dst.HttpsCertFile = src.HttpsCertFile
-	}
-	if dst.HttpsKeyFile == "" && src.HttpsKeyFile != "" {
-		dst.HttpsKeyFile = src.HttpsKeyFile
-	}
-}
+func mergeCommonHttpAddrConfig(dst, src *CommonHttpAddrConfig) { _ = "STUB: not implemented"; return }
 
 func ensureStartWithSlash(in string) (out string, changed bool) {
-	if in == "" {
-		return in, false
-	}
-	if in[0] == '/' {
-		return in, false
-	}
-	return "/" + in, true
+	_ = "STUB: not implemented"
+	return "", false
 }
 
 func ensureEndWithSlash(in string) (out string, changed bool) {
-	if in == "" {
-		return in, false
-	}
-	if in[len(in)-1] == '/' {
-		return in, false
-	}
-	return in + "/", true
+	_ = "STUB: not implemented"
+	return "", false
 }
 
 func ensureStartAndEndWithSlash(in string) (out string, changed bool) {
-	n, c := ensureStartWithSlash(in)
-	n2, c2 := ensureEndWithSlash(n)
-	return n2, c || c2
+	_ = "STUB: not implemented"
+	return "", false
 }

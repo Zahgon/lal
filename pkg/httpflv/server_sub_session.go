@@ -12,8 +12,6 @@ import (
 	"net"
 
 	"github.com/q191201771/lal/pkg/base"
-
-	"github.com/q191201771/naza/pkg/connection"
 )
 
 type SubSession struct {
@@ -23,97 +21,56 @@ type SubSession struct {
 }
 
 func NewSubSession(conn net.Conn, urlCtx base.UrlContext, isWebSocket bool, websocketKey string) *SubSession {
-	uk := base.GenUkFlvSubSession()
-	s := &SubSession{
-		core: base.NewBasicHttpSubSession(base.BasicHttpSubSessionOption{
-			Conn: conn,
-			ConnModOption: func(option *connection.Option) {
-				option.WriteChanSize = SubSessionWriteChanSize
-				option.WriteTimeoutMs = SubSessionWriteTimeoutMs
-			},
-			SessionType:  base.SessionTypeFlvSub,
-			UrlCtx:       urlCtx,
-			IsWebSocket:  isWebSocket,
-			WebSocketKey: websocketKey,
-		}),
-		IsFresh:                 true,
-		ShouldWaitVideoKeyFrame: true,
-	}
-	Log.Infof("[%s] lifecycle new httpflv SubSession. session=%p, remote addr=%s", uk, s, conn.RemoteAddr().String())
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IServerSessionLifecycle interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *SubSession) RunLoop() error {
-	return session.core.RunLoop()
-}
+func (session *SubSession) RunLoop() error { _ = "STUB: not implemented"; return nil }
 
-func (session *SubSession) Dispose() error {
-	Log.Infof("[%s] lifecycle dispose httpflv SubSession.", session.core.UniqueKey())
-	return session.core.Dispose()
-}
+func (session *SubSession) Dispose() error { _ = "STUB: not implemented"; return nil }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *SubSession) WriteHttpResponseHeader() {
-	Log.Debugf("[%s] > W http response header.", session.core.UniqueKey())
-	session.core.WriteHttpResponseHeader(base.LalFlvHttpResponseHeader)
-}
+func (session *SubSession) WriteHttpResponseHeader() { _ = "STUB: not implemented"; return }
 
-func (session *SubSession) WriteFlvHeader() {
-	Log.Debugf("[%s] > W http flv header.", session.core.UniqueKey())
-	session.core.Write(FlvHeader)
-}
+func (session *SubSession) WriteFlvHeader() { _ = "STUB: not implemented"; return }
 
-func (session *SubSession) WriteTag(tag *Tag) {
-	session.core.Write(tag.Raw)
-}
+func (session *SubSession) WriteTag(tag *Tag) { _ = "STUB: not implemented"; return }
 
-func (session *SubSession) Write(b []byte) {
-	session.core.Write(b)
-}
+func (session *SubSession) Write(b []byte) { _ = "STUB: not implemented"; return }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // IObject interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *SubSession) UniqueKey() string {
-	return session.core.UniqueKey()
-}
+func (session *SubSession) UniqueKey() string { _ = "STUB: not implemented"; return "" }
 
 // ---------------------------------------------------------------------------------------------------------------------
 // ISessionUrlContext interface
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (session *SubSession) Url() string {
-	return session.core.Url()
-}
+func (session *SubSession) Url() string { _ = "STUB: not implemented"; return "" }
 
-func (session *SubSession) AppName() string {
-	return session.core.AppName()
-}
+func (session *SubSession) AppName() string { _ = "STUB: not implemented"; return "" }
 
-func (session *SubSession) StreamName() string {
-	return session.core.StreamName()
-}
+func (session *SubSession) StreamName() string { _ = "STUB: not implemented"; return "" }
 
-func (session *SubSession) RawQuery() string {
-	return session.core.RawQuery()
-}
+func (session *SubSession) RawQuery() string { _ = "STUB: not implemented"; return "" }
 
 // ----- ISessionStat --------------------------------------------------------------------------------------------------
 
-func (session *SubSession) UpdateStat(intervalSec uint32) {
-	session.core.UpdateStat(intervalSec)
-}
+func (session *SubSession) UpdateStat(intervalSec uint32) { _ = "STUB: not implemented"; return }
 
 func (session *SubSession) GetStat() base.StatSession {
-	return session.core.GetStat()
+	_ = "STUB: not implemented"
+	return *new(base.StatSession)
 }
 
 func (session *SubSession) IsAlive() (readAlive, writeAlive bool) {
-	return session.core.IsAlive()
+	_ = "STUB: not implemented"
+	return false, false
 }

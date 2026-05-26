@@ -9,7 +9,6 @@
 package main
 
 import (
-	"flag"
 	"io"
 	"os"
 
@@ -80,14 +79,4 @@ func main() {
 	}
 }
 
-func parseFlag() (string, string, string) {
-	flv := flag.String("i", "", "specify flv file")
-	a := flag.String("a", "", "specify es aac file")
-	v := flag.String("v", "", "specify es h264 file")
-	flag.Parse()
-	if *flv == "" || *a == "" || *v == "" {
-		flag.Usage()
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *flv, *a, *v
-}
+func parseFlag() (string, string, string) { _ = "STUB: not implemented"; return "", "", "" }

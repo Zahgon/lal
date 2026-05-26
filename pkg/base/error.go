@@ -10,7 +10,6 @@ package base
 
 import (
 	"errors"
-	"fmt"
 )
 
 // ----- 通用的 ---------------------------------------------------------------------------------------------------------
@@ -59,12 +58,11 @@ var (
 	ErrRtmpUnexpectedMsg = errors.New("lal.rtmp: unexpected msg")
 )
 
-func NewErrAmfInvalidType(b byte) error {
-	return fmt.Errorf("%w. b=%d", ErrAmfInvalidType, b)
-}
+func NewErrAmfInvalidType(b byte) error { _ = "STUB: not implemented"; return nil }
 
 func NewErrRtmpShortBuffer(need, actual int, msg string) error {
-	return fmt.Errorf("%w. need=%d, actual=%d, msg=%s", ErrRtmpShortBuffer, need, actual, msg)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ----- pkg/rtprtcp ---------------------------------------------------------------------------------------------------

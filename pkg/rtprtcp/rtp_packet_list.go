@@ -8,11 +8,6 @@
 
 package rtprtcp
 
-import (
-	"fmt"
-	"github.com/q191201771/naza/pkg/nazabytes"
-)
-
 type RtpPacketListItem struct {
 	Packet RtpPacket
 	Next   *RtpPacketListItem
@@ -36,106 +31,46 @@ type RtpPacketList struct {
 }
 
 // IsStale 是否过期
-func (l *RtpPacketList) IsStale(seq uint16) bool {
-	if !l.doneSeqFlag {
-		return false
-	}
+func (l *RtpPacketList) IsStale(seq uint16) bool { _ = "STUB: not implemented"; return false }
 
-	// 序号太小
-	return CompareSeq(seq, l.doneSeq) <= 0
-}
+// 序号太小
 
 // Insert 插入有序链表，并去重
 func (l *RtpPacketList) Insert(pkt RtpPacket) {
+	_ = "STUB: not implemented"
 	// 遍历查找插入位置
-	p := &l.Head
-	// TODO(chef): [perf] 考虑优化成从后往前查找，提高查找效率 202207
-	for ; p.Next != nil; p = p.Next {
-		res := CompareSeq(pkt.Header.Seq, p.Next.Packet.Header.Seq)
-		switch res {
-		case 0:
-			// 包已经存在，不需要插入了
-			return
-		case 1:
-			// noop
-		case -1:
-			item := &RtpPacketListItem{
-				Packet: pkt,
-				Next:   p.Next,
-			}
-			p.Next = item
-			l.Size++
-			return
-		}
-	}
-
-	item := &RtpPacketListItem{
-		Packet: pkt,
-		Next:   p.Next,
-	}
-	p.Next = item
-	l.Size++
 	return
 }
 
+// TODO(chef): [perf] 考虑优化成从后往前查找，提高查找效率 202207
+
+// 包已经存在，不需要插入了
+
+// noop
+
 // PopFirst 弹出第一个包。注意，调用方保证容器不为空时调用
-func (l *RtpPacketList) PopFirst() RtpPacket {
-	pkt := l.Head.Next.Packet
-	l.Head.Next = l.Head.Next.Next
-	l.Size--
-	return pkt
-}
+func (l *RtpPacketList) PopFirst() RtpPacket { _ = "STUB: not implemented"; return *new(RtpPacket) }
 
 // PeekFirst 查看第一个包。注意，调用方保证容器不为空时调用
 func (l *RtpPacketList) PeekFirst() RtpPacket {
-	return l.Head.Next.Packet
+	_ = "STUB: not implemented"
+	return *
+
+	// InitMaxSize 设置容器最大容量
+	new(RtpPacket)
 }
 
-// InitMaxSize 设置容器最大容量
-func (l *RtpPacketList) InitMaxSize(maxSize int) {
-	l.maxSize = maxSize
-}
+func (l *RtpPacketList) InitMaxSize(maxSize int) { _ = "STUB: not implemented"; return }
 
 // Full 是否已经满了
-func (l *RtpPacketList) Full() bool {
-	return l.Size >= l.maxSize
-}
+func (l *RtpPacketList) Full() bool { _ = "STUB: not implemented"; return false }
 
 // IsFirstSequential 第一个包是否是需要的（与之前已处理的是连续的）
-func (l *RtpPacketList) IsFirstSequential() bool {
-	first := l.Head.Next
-	if first == nil {
-		return false
-	}
-
-	if !l.doneSeqFlag {
-		return true
-	}
-
-	return SubSeq(first.Packet.Header.Seq, l.doneSeq) == 1
-}
+func (l *RtpPacketList) IsFirstSequential() bool { _ = "STUB: not implemented"; return false }
 
 // SetDoneSeq 设置已处理的包序号，比如已经成功合成了，或者主动丢弃到该位置结束丢弃了
-func (l *RtpPacketList) SetDoneSeq(seq uint16) {
-	l.doneSeqFlag = true
-	l.doneSeq = seq
-}
+func (l *RtpPacketList) SetDoneSeq(seq uint16) { _ = "STUB: not implemented"; return }
 
-func (l *RtpPacketList) Reset() {
-	l.doneSeqFlag = false
-	l.doneSeq = 0
-	l.Head.Next = nil
-}
+func (l *RtpPacketList) Reset() { _ = "STUB: not implemented"; return }
 
-func (l *RtpPacketList) DebugString() string {
-	p := l.Head.Next
-	buf := nazabytes.NewBuffer(65535)
-	buf.WriteString(fmt.Sprintf("size=%d, doneSeq=%d", l.Size, l.doneSeq))
-	buf.WriteString(" [")
-	for p != nil {
-		buf.WriteString(fmt.Sprintf("%d ", p.Packet.Header.Seq))
-		p = p.Next
-	}
-	buf.WriteString("]")
-	return buf.String()
-}
+func (l *RtpPacketList) DebugString() string { _ = "STUB: not implemented"; return "" }

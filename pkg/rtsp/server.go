@@ -9,7 +9,6 @@
 package rtsp
 
 import (
-	"crypto/tls"
 	"net"
 )
 
@@ -66,92 +65,42 @@ type Server struct {
 }
 
 func NewServer(addr string, observer IServerObserver, auth ServerAuthConfig) *Server {
-	return &Server{
-		addr:     addr,
-		observer: observer,
-		auth:     auth,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (s *Server) Listen() (err error) {
-	s.ln, err = net.Listen("tcp", s.addr)
-	if err != nil {
-		return
-	}
-	Log.Infof("start rtsp server listen. addr=%s", s.addr)
-	return
-}
+func (s *Server) Listen() (err error) { _ = "STUB: not implemented"; return nil }
 
 func (s *Server) ListenWithTLS(certFile, keyFile string) (err error) {
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-	if err != nil {
-		Log.Errorf("start rtsps server listen failed. certFile=%s, keyFile=%s, err=%+v", certFile, keyFile, err)
-		return
-	}
-	tlsConfig := &tls.Config{Certificates: []tls.Certificate{cert}}
-	if s.ln, err = tls.Listen("tcp", s.addr, tlsConfig); err != nil {
-		return
-	}
-	Log.Infof("start rtsps server listen. addr=%s", s.addr)
-	return
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (s *Server) RunLoop() error {
-	for {
-		conn, err := s.ln.Accept()
-		if err != nil {
-			return err
-		}
-		go s.handleTcpConnect(conn)
-	}
-}
+func (s *Server) RunLoop() error { _ = "STUB: not implemented"; return nil }
 
-func (s *Server) Dispose() {
-	if s.ln == nil {
-		return
-	}
-	if err := s.ln.Close(); err != nil {
-		Log.Error(err)
-	}
-}
+func (s *Server) Dispose() { _ = "STUB: not implemented"; return }
 
 // ----- ServerCommandSessionObserver ----------------------------------------------------------------------------------
 
 func (s *Server) OnNewRtspPubSession(session *PubSession) error {
-	return s.observer.OnNewRtspPubSession(session)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (s *Server) OnNewRtspSubSessionDescribe(session *SubSession) (ok bool, sdp []byte) {
-	return s.observer.OnNewRtspSubSessionDescribe(session)
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 func (s *Server) OnNewRtspSubSessionPlay(session *SubSession) error {
-	return s.observer.OnNewRtspSubSessionPlay(session)
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (s *Server) OnDelRtspPubSession(session *PubSession) {
-	s.observer.OnDelRtspPubSession(session)
-}
+func (s *Server) OnDelRtspPubSession(session *PubSession) { _ = "STUB: not implemented"; return }
 
-func (s *Server) OnDelRtspSubSession(session *SubSession) {
-	s.observer.OnDelRtspSubSession(session)
-}
+func (s *Server) OnDelRtspSubSession(session *SubSession) { _ = "STUB: not implemented"; return }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func (s *Server) handleTcpConnect(conn net.Conn) {
-	session := NewServerCommandSession(s, conn, s.auth, false, "")
-	s.observer.OnNewRtspSessionConnect(session)
-
-	err := session.RunLoop()
-	Log.Info(err)
-
-	if session.pubSession != nil {
-		s.observer.OnDelRtspPubSession(session.pubSession)
-		_ = session.pubSession.Dispose()
-	} else if session.subSession != nil {
-		s.observer.OnDelRtspSubSession(session.subSession)
-		_ = session.subSession.Dispose()
-	}
-	s.observer.OnDelRtspSession(session)
-}
+func (s *Server) handleTcpConnect(conn net.Conn) { _ = "STUB: not implemented"; return }

@@ -11,22 +11,9 @@ package rtprtcp
 type RtpPackerPayloadOpus struct {
 }
 
-func NewRtpPackerPayloadOpus() *RtpPackerPayloadOpus {
-	return &RtpPackerPayloadOpus{}
-}
+func NewRtpPackerPayloadOpus() *RtpPackerPayloadOpus { _ = "STUB: not implemented"; return nil }
 
 func (r *RtpPackerPayloadOpus) Pack(in []byte, maxSize int) (out [][]byte) {
-	if in == nil || maxSize <= 0 {
-		return
-	}
-
-	if len(in) > maxSize {
-		Log.Warnf("frame size bigger than rtp payload size while packing. len(in)=%d, maxSize=%d", len(in), maxSize)
-	}
-
-	item := make([]byte, len(in))
-	copy(item, in)
-	out = append(out, item)
-
-	return
+	_ = "STUB: not implemented"
+	return nil
 }

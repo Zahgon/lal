@@ -11,19 +11,7 @@
 
 package base
 
-import (
-	"os"
-	"os/signal"
-	"syscall"
-)
-
 // RunSignalHandler 监听SIGUSR1和SIGUSR2信号并回调
 //
 // TODO(chef): refactor 函数名应与SIGUSR1挂钩
-func RunSignalHandler(cb func()) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGUSR1, syscall.SIGUSR2)
-	s := <-c
-	Log.Infof("recv signal. s=%+v", s)
-	cb()
-}
+func RunSignalHandler(cb func()) { _ = "STUB: not implemented"; return }

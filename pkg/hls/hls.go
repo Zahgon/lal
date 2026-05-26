@@ -8,10 +8,6 @@
 
 package hls
 
-import (
-	"github.com/q191201771/lal/pkg/base"
-)
-
 // TODO chef:
 // - 补充单元测试
 // - 配置项
@@ -38,17 +34,6 @@ const (
 )
 
 func SplitFragment2TsPackets(content []byte) (ret [][]byte, err error) {
-	if len(content)%188 != 0 {
-		err = base.ErrHls
-		return
-	}
-	for {
-		if len(content) == 0 {
-			break
-		}
-
-		ret = append(ret, content[0:188])
-		content = content[188:]
-	}
-	return
+	_ = "STUB: not implemented"
+	return nil, nil
 }

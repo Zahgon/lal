@@ -9,10 +9,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -34,19 +32,9 @@ const (
 	PullTypeHttpflv
 )
 
-func (pt PullType) Readable() string {
-	switch pt {
-	case PullTypeUnknown:
-		return "unknown"
-	case PullTypeRtmp:
-		return "rtmp"
-	case PullTypeHttpflv:
-		return "httpflv"
-	}
+func (pt PullType) Readable() string { _ = "STUB: not implemented"; return "" }
 
-	// never reach here
-	return "fxxk"
-}
+// never reach here
 
 func main() {
 	_ = nazalog.Init(func(option *nazalog.Option) {
@@ -183,27 +171,6 @@ func main() {
 }
 
 func parseFlag() (filename, pushUrl, pullUrl string, pullType PullType) {
-	f := flag.String("f", "", "specify flv file")
-	o := flag.String("o", "", "specify rtmp/httpflv push url")
-	i := flag.String("i", "", "specify rtmp/httpflv pull url")
-	flag.Parse()
-	if strings.HasPrefix(*i, "rtmp") {
-		pullType = PullTypeRtmp
-	} else if strings.HasSuffix(*i, ".flv") {
-		pullType = PullTypeHttpflv
-	} else {
-		pullType = PullTypeUnknown
-	}
-	if *f == "" || *i == "" || *o == "" || pullType == PullTypeUnknown {
-		flag.Usage()
-		_, _ = fmt.Fprintf(os.Stderr, `Example:
-  %s -f test.flv -o rtmp://127.0.0.1:1935/live/test -i rtmp://127.0.0.1:1935/live/test
-  %s -f test.flv -o rtmp://127.0.0.1:1935/live/test -i http://127.0.0.1:8080/live/test.flv
-`, os.Args[0], os.Args[0])
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	filename = *f
-	pushUrl = *o
-	pullUrl = *i
-	return
+	_ = "STUB: not implemented"
+	return "", "", "", *new(PullType)
 }

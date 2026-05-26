@@ -17,30 +17,17 @@ type FlvFileReader struct {
 	hasReadFlvHeader bool
 }
 
-func (ffr *FlvFileReader) Open(filename string) (err error) {
-	ffr.fp, err = os.Open(filename)
-	return
-}
+func (ffr *FlvFileReader) Open(filename string) (err error) { _ = "STUB: not implemented"; return nil }
 
 func (ffr *FlvFileReader) ReadFlvHeader() ([]byte, error) {
-	ffr.hasReadFlvHeader = true
-
-	flvHeader := make([]byte, flvHeaderSize)
-	_, err := ffr.fp.Read(flvHeader)
-	return flvHeader, err
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (ffr *FlvFileReader) ReadTag() (Tag, error) {
+	_ = "STUB: not implemented"
 	// lazy read flv header
-	if !ffr.hasReadFlvHeader {
-		_, _ = ffr.ReadFlvHeader()
-	}
-
-	return ReadTag(ffr.fp)
+	return *new(Tag), nil
 }
 
-func (ffr *FlvFileReader) Dispose() {
-	if ffr.fp != nil {
-		_ = ffr.fp.Close()
-	}
-}
+func (ffr *FlvFileReader) Dispose() { _ = "STUB: not implemented"; return }

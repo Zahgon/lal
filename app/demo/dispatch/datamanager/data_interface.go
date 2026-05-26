@@ -29,10 +29,6 @@ const (
 
 // @param serverTimeoutSec 超过该时间间隔没有Update，则清空对应节点的所有信息
 func NewDataManager(t DataManagerType, serverTimeoutSec int) DataManger {
-	switch t {
-	case DmtMemory:
-		return NewDataManagerMemory(serverTimeoutSec)
-	default:
-		panic("invalid data manager type")
-	}
+	_ = "STUB: not implemented"
+	return *new(DataManger)
 }

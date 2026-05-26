@@ -36,73 +36,39 @@ const (
 //	return unique.GenUniqueKey(prefix)
 //}
 
-func GenUkCustomizePubSession() string {
-	return siUkCustomizePubSession.GenUniqueKey()
-}
+func GenUkCustomizePubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtmpServerSession() string {
-	return siUkRtmpServerSession.GenUniqueKey()
-}
+func GenUkRtmpServerSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtmpPushSession() string {
-	return siUkRtmpPushSession.GenUniqueKey()
-}
+func GenUkRtmpPushSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtmpPullSession() string {
-	return siUkRtmpPullSession.GenUniqueKey()
-}
+func GenUkRtmpPullSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtspServerCommandSession() string {
-	return siUkRtspServerCommandSession.GenUniqueKey()
-}
+func GenUkRtspServerCommandSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtspPubSession() string {
-	return siUkRtspPubSession.GenUniqueKey()
-}
+func GenUkRtspPubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtspSubSession() string {
-	return siUkRtspSubSession.GenUniqueKey()
-}
+func GenUkRtspSubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtspPushSession() string {
-	return siUkRtspPushSession.GenUniqueKey()
-}
+func GenUkRtspPushSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtspPullSession() string {
-	return siUkRtspPullSession.GenUniqueKey()
-}
+func GenUkRtspPullSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkFlvSubSession() string {
-	return siUkFlvSubSession.GenUniqueKey()
-}
+func GenUkFlvSubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkTsSubSession() string {
-	return siUkTsSubSession.GenUniqueKey()
-}
+func GenUkTsSubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkFlvPullSession() string {
-	return siUkFlvPullSession.GenUniqueKey()
-}
+func GenUkFlvPullSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkHlsSubSession() string {
-	return siUkHlsSubSession.GenUniqueKey()
-}
+func GenUkHlsSubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkPsPubSession() string {
-	return siUkPsPubSession.GenUniqueKey()
-}
+func GenUkPsPubSession() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkGroup() string {
-	return siUkGroup.GenUniqueKey()
-}
+func GenUkGroup() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkHlsMuxer() string {
-	return siUkHlsMuxer.GenUniqueKey()
-}
+func GenUkHlsMuxer() string { _ = "STUB: not implemented"; return "" }
 
-func GenUkRtmp2MpegtsRemuxer() string {
-	return siUkRtmp2MpegtsRemuxer.GenUniqueKey()
-}
+func GenUkRtmp2MpegtsRemuxer() string { _ = "STUB: not implemented"; return "" }
 
 var (
 	siUkCustomizePubSession      *unique.SingleGenerator

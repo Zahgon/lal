@@ -57,7 +57,8 @@ type ILalServer interface {
 //
 // @param modOption: 定制化配置。可变参数，如果不关心，可以不填，具体字段见 Option
 func NewLalServer(modOption ...ModOption) ILalServer {
-	return NewServerManager(modOption...)
+	_ = "STUB: not implemented"
+	return *new(ILalServer)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

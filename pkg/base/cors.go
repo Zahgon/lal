@@ -17,18 +17,12 @@ var (
 )
 
 func AddCorsHeaders2HlsIfNeeded(w http.ResponseWriter) {
+	_ = "STUB: not implemented"
 	// TODO(chef): [opt] 为其他协议也增加配置项 202308
-
-	if AddCors2HlsFlag {
-		AddCorsHeaders(w)
-	}
+	return
 }
 
-func AddCorsHeaders(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-}
+func AddCorsHeaders(w http.ResponseWriter) { _ = "STUB: not implemented"; return }
 
 //resp.Header().Add("Access-Control-Allow-Origin", "*")
 //resp.Header().Add("Access-Control-Allow-Credentials", "true")

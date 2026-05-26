@@ -9,7 +9,6 @@
 package base
 
 import (
-	"sort"
 	"sync"
 )
 
@@ -98,73 +97,25 @@ type PeriodRecord struct {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-func Session2StatPub(session ISession) StatPub {
-	return StatPub{
-		session.GetStat(),
-	}
-}
+func Session2StatPub(session ISession) StatPub { _ = "STUB: not implemented"; return *new(StatPub) }
 
-func Session2StatSub(session ISession) StatSub {
-	return StatSub{
-		session.GetStat(),
-	}
-}
+func Session2StatSub(session ISession) StatSub { _ = "STUB: not implemented"; return *new(StatSub) }
 
-func Session2StatPull(session ISession) StatPull {
-	return StatPull{
-		session.GetStat(),
-	}
-}
+func Session2StatPull(session ISession) StatPull { _ = "STUB: not implemented"; return *new(StatPull) }
 
 // GetFpsFrom
 //
 // s.Fps 是输出，p 是输入
 func (s *StatGroup) GetFpsFrom(p *PeriodRecord, nowUnixSec int64) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	if s.Fps == nil || len(s.Fps) < len(p.ringBuf) {
-		s.Fps = make([]RecordPerSec, len(p.ringBuf))
-	}
-
-	nRecord := 0
-	for _, record := range p.ringBuf {
-		if record.UnixSec == 0 {
-			continue
-		}
-		if record.UnixSec == nowUnixSec {
-			// value at nowUnixSec not completely recorded
-			continue
-		}
-		s.Fps[nRecord] = record
-		nRecord++
-	}
-	s.Fps = s.Fps[0:nRecord]
-
-	sort.Slice(s.Fps, func(i, j int) bool {
-		return s.Fps[i].UnixSec > s.Fps[j].UnixSec
-	})
-}
-
-func NewPeriodRecord(bufSize int) PeriodRecord {
-	return PeriodRecord{
-		ringBuf: make([]RecordPerSec, bufSize),
-	}
-}
-
-func (p *PeriodRecord) Add(unixSec int64, v uint32) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	var index int64
-	var record RecordPerSec
-	index = unixSec % int64(len(p.ringBuf))
-	record = p.ringBuf[index]
-	if record.UnixSec == unixSec {
-		p.ringBuf[index].V = record.V + v
-	} else {
-		p.ringBuf[index].UnixSec = unixSec
-		p.ringBuf[index].V = v
-	}
+	_ = "STUB: not implemented"
 	return
 }
+
+// value at nowUnixSec not completely recorded
+
+func NewPeriodRecord(bufSize int) PeriodRecord {
+	_ = "STUB: not implemented"
+	return *new(PeriodRecord)
+}
+
+func (p *PeriodRecord) Add(unixSec int64, v uint32) { _ = "STUB: not implemented"; return }

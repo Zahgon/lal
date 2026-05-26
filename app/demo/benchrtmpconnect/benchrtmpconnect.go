@@ -9,11 +9,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -90,44 +87,8 @@ func main() {
 	_, _ = fmt.Fprintf(os.Stderr, " cost(ms): total=%d, avg=%d, min=%d, max=%d\n", totalCost, avg, min, max)
 }
 
-func analyse(costs []int64) (min, max, avg int64) {
-	min = 2147483647
-	max = 0
-	sum := int64(0)
-	for _, cost := range costs {
-		if cost < min {
-			min = cost
-		}
-		if cost > max {
-			max = cost
-		}
-		sum += cost
-	}
-	if len(costs) > 0 {
-		avg = sum / int64(len(costs))
-	}
-	return
-}
+func analyse(costs []int64) (min, max, avg int64) { _ = "STUB: not implemented"; return 0, 0, 0 }
 
-func collect(urlTmpl string, num int) (urls []string) {
-	for i := 0; i < num; i++ {
-		url := strings.Replace(urlTmpl, "{i}", strconv.Itoa(i), -1)
-		urls = append(urls, url)
-	}
-	return
-}
+func collect(urlTmpl string, num int) (urls []string) { _ = "STUB: not implemented"; return nil }
 
-func parseFlag() (urlTmpl string, num int) {
-	i := flag.String("i", "", "specify pull rtmp pull")
-	n := flag.Int("n", 0, "specify num of pull connection")
-	flag.Parse()
-	if *i == "" || *n == 0 {
-		flag.Usage()
-		_, _ = fmt.Fprintf(os.Stderr, `Example:
-  %s -i rtmp://127.0.0.1:1935/live/test -n 1000
-  %s -i rtmp://127.0.0.1:1935/live/test_{i} -n 1000
-`, os.Args[0], os.Args[0])
-		base.OsExitAndWaitPressIfWindows(1)
-	}
-	return *i, *n
-}
+func parseFlag() (urlTmpl string, num int) { _ = "STUB: not implemented"; return "", 0 }
